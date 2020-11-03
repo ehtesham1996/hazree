@@ -16,13 +16,13 @@ module.exports = {
     alias: {
       '@src': path.resolve(__dirname, './src'),
       '@queries': path.resolve(__dirname, './queries'),
-      '@tests': path.resolve(__dirname, './tests'),
-    },
+      '@tests': path.resolve(__dirname, './tests')
+    }
   },
   output: {
     libraryTarget: 'commonjs',
     path: path.join(__dirname, '.webpack'),
-    filename: '[name].js',
+    filename: '[name].js'
   },
   target: 'node',
   externals: [nodeExternals()],
@@ -36,22 +36,22 @@ module.exports = {
           [
             path.resolve(__dirname, 'node_modules'),
             path.resolve(__dirname, '.serverless'),
-            path.resolve(__dirname, '.webpack'),
-          ],
+            path.resolve(__dirname, '.webpack')
+          ]
         ],
         options: {
           transpileOnly: true,
-          experimentalWatchApi: true,
-        },
-      },
-    ],
+          experimentalWatchApi: true
+        }
+      }
+    ]
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin({
       eslint: true,
       eslintOptions: {
-        cache: true,
-      },
-    }),
-  ],
+        cache: true
+      }
+    })
+  ]
 };

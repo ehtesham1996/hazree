@@ -1,43 +1,41 @@
 service:
-  name: typescript-serverless
+  name: hazree-backend
 
+package:
+  individually: true
+  
 custom:
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
+    excludeFiles: '**/*.test.ts' #Excluding test files in the final build
   serverless-iam-roles-per-function:
     defaultInherit: true # Each function will inherit the service level roles too.
-  globalTables:
-    regions: # list of regions in which you want to set up global tables
-      - us-east-2 # Ohio (default region to date for stack)
-      - ap-southeast-2 # Sydney (lower latency for Australia)
-    createStack: true
   prune:
     automatic: true
     number: 3
-
-
 
 plugins:
   - serverless-offline
   - serverless-webpack
   - serverless-iam-roles-per-function
-  - serverless-create-global-dynamodb-table
   - serverless-prune-plugin
+  - serverless-dotenv-plugin
 
 provider:
   name: aws
   runtime: nodejs12.x
   frameworkVersion: ‘1.64.1’
-  stage: ${opt:stage, 'local'}
-  region: ${opt:region, 'us-east-2'}
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-west-2'} # Deployment to be in london
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
     DEBUG: '*'
-    NODE_ENV: ${self:provider.stage}
+    ENV: ${self:provider.stage}
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
   tracing:
+    apiGateway: false
     lambda: true
   iamRoleStatements:
     - Effect: Allow
@@ -45,11 +43,17 @@ provider:
         - xray:PutTraceSegments
         - xray:PutTelemetryRecords
       Resource: "*"
-
 functions:
-  hello:
-    handler: src/handler.hello
+  ping:
+    handler: src/api/functions/ping-pong/ping-pong.lambda.handler
     events:
       - http:
           method: get
-          path: hello
+          path: ping
+  timesheet-daily:
+    handler: src/api/functions/timesheets/timesheet-daily.lambda.handler
+    events:
+      - http:
+          method: get
+          path: admin/timesheet/daily/{date}
+          

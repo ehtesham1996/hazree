@@ -1,97 +1,33 @@
-# typescript-serverless
-Base template for serverless framework with typescript, eslint and jest preconfigured
+# Hazree
 
-This repository comes pre-configured with some common tools and configuration for working serverless frameowrk and Typescript with AWS.
+Softoo Ultimate Attendance And Leaves Managment System on AWS. 
 
-A full breakdown of this setup can be found [here](https://medium.com/@Michael_Timbs/getting-started-with-aws-serverless-typescript-8c172ccfec41)
+### Install 
 
+1. clone repo
+2. npm install or yarn install
+3. cp .env.sample .env
+4. change the .env config to setup for your local environment
 
-## Serverless Plugins
-- serverless-iam-roles-per-function
-- serverless-create-global-dynamodb-table
-- serverless-offline
+### Start
 
-### Lambda PowerTools
-- @dazn/lambda-powertools-cloudwatchevents-client
-- @dazn/lambda-powertools-correlation-ids
-- @dazn/lambda-powertools-logger
-- @dazn/lambda-powertools-pattern-basic
-- @dazn/lambda-powertools-lambda-client
-- @dazn/lambda-powertools-sns-client
-- @dazn/lambda-powertools-sqs-client
-- @dazn/lambda-powertools-dynamodb-client
-- @dazn/lambda-powertools-kinesis-client
+1. npm run start:dev
+2. http://localhost:3000/ping this should return `pong`
 
-### Linting
-- eslint
-- eslint-config-airbnb-base
-- typescript-eslint
-- eslint-plugin-import
-- @typescript-eslint/eslint-plugin
-- @typescript/eslint-parser
-- eslint-import-resolver-alias
-- eslint-plugin-module-resolver
+### Local development
 
-### Testing
-- jest
-- babel-jest
-- @babel/core
-- @babel/preset-env
-- @babel/preset-typescript
+For local developement please use the command npm run start:dev to start server in development mode.
 
-A default test is included to verify that jest is configured correctly
-```
-describe('who tests the tests?', () => {
-  it('can run a test', () => {
-    expect.hasAssertions();
-    expect(1).toBe(1);
-  });
-});
-```
+### Pull request
 
-### Module Aliasing
-Everything comes configured out the box to leverage module aliasing. 3 example aliases have been preconfigured.
+More details will be added later.
 
-Aliases must be defined in webpack, tsconfig, and eslint
+### Tech
+TypeScript, Nodejs, MongoDB, Serverless Framework, AWS
 
-webpack:
-```
-resolve: {
-  extensions: ['.mjs', '.json', '.ts'],
-  symlinks: false,
-  cacheWithContext: false,
-  alias: {
-    '@src': path.resolve(__dirname, './src'),
-    '@queries': path.resolve(__dirname, './queries'),
-    '@tests': path.resolve(__dirname, './tests'),
-  },
-},
-```
+### Usefull Comands
 
-tsconfig:
-```
-"paths": {
-  "@src/*": ["src/*"],
-  "@queries/*": ["queries/*"],
-  "@tests/*": ["tests/*"]
-}
-```
-
-eslint:
-```
-"settings": {
-  "import/resolver": {
-    "alias": {
-      "map": [
-        ["@src", "./src"],
-        ["@tests", "./tests"],
-        ["@queries", "./queries"]
-      ],
-      "extensions": [
-        ".ts",
-        ".js"
-      ]
-    }
-  }
-}
-```
+1. npm run start:dev
+2. npm run lint
+3. npm run coverage
+4. sls deploy (don't use this until you know what it does)

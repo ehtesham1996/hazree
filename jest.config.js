@@ -1,7 +1,7 @@
 module.exports = {
   setupFiles: ['./tests/setup/setEnvironment.js'],
   transform: {
-    '^.+\\.ts?$': 'babel-jest',
+    '^.+\\.ts?$': 'babel-jest'
   },
   moduleNameMapper: {
     // Jest needs to know about module aliasing as it doesn't run after webpack magic
@@ -9,6 +9,6 @@ module.exports = {
     '^@clients/(.*)$': '<rootDir>/src/clients/$1',
     '^@transformers/(.*)$': '<rootDir>/src/transformers/$1',
     '^@src/(.*)$': '<rootDir>/src/$1',
-    '^@tests/(.*)$': '<rootDir>/tests/$1',
-  },
+    '^@tests/(.*)$': '<rootDir>/tests/$1'
+  }
 };

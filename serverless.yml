@@ -7,7 +7,9 @@ package:
 custom:
   webpack:
     webpackConfig: ./webpack.config.js
-    includeModules: true
+    includeModules: 
+      forceExclude:
+        - aws-sdk
     excludeFiles: '**/*.test.ts' #Excluding test files in the final build
   serverless-iam-roles-per-function:
     defaultInherit: true # Each function will inherit the service level roles too.
@@ -26,32 +28,29 @@ provider:
   name: aws
   runtime: nodejs12.x
   frameworkVersion: ‘1.64.1’
-  stage: ${opt:stage, 'dev'}
-  region: ${opt:region, 'us-west-2'} # Deployment to be in london
+  stage: ${opt:stage, 'dev'} # default sls deploy will deploy to dev
+  region: ${opt:region, 'eu-west-2'} # Deployment to be in london
+  memorySize: 128 # Lambda function to take default memory of 128 MB only overwrite in function if you need to update
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  deploymentBucket:
+    name: com.serverless.hazree.deploys # Change with the project name
+    maxPreviousDeploymentArtifacts: 3
   environment:
     DEBUG: '*'
     ENV: ${self:provider.stage}
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
-  tracing:
-    apiGateway: false
-    lambda: true
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - xray:PutTraceSegments
-        - xray:PutTelemetryRecords
-      Resource: "*"
+  role: arn:aws:iam::428694752194:role/cloud9-helloWorld-helloRole-1ES8HB9ZW7VZD
+
 functions:
   ping:
-    handler: src/api/functions/ping-pong/ping-pong.lambda.handler
+    handler: src/api/functions/ping-pong/ping-pong.handler
     events:
       - http:
           method: get
           path: ping
   timesheet-daily:
-    handler: src/api/functions/timesheets/timesheet-daily.lambda.handler
+    handler: src/api/functions/timesheets/timesheet-daily.handler
     events:
       - http:
           method: get

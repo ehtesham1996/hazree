@@ -25,7 +25,8 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent, co
       tz: 'Asia/Karachi'
     });
 
-    const parsedDate = moment(date, 'YYYY-MM-DD', requestingUser.tz, true);
+    const parsedDate = moment(date, 'YYYY-MM-DD').tz(requestingUser.tz);
+    console.log(parsedDate.toISOString());
 
     if (!parsedDate.isValid()) {
       throw new BadRequestError('Please select valid date in format YYYY-MM-DD');
@@ -39,6 +40,9 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent, co
 
     const startDate = parsedDate.startOf('day').unix();
     const endDate = parsedDate.endOf('day').unix();
+
+    let minStartingTime = 0;
+    let maxEndingTime = 0;
 
     const usersDailyData = await Promise.all(allUsers.map(async (user) => {
       const userAttendanceData = {
@@ -61,23 +65,44 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent, co
       const attendance = await AttendanceModel.findOne(query);
 
       let totalTime = 0;
-      userAttendanceData.sessions = attendance.sessions.map((session) => {
-        const duration = session.out_stamp - session.in_stamp;
+      userAttendanceData.sessions = (attendance && attendance.sessions.map((session) => {
+        const inTime = session.in_stamp;
+        let outTime = session.out_stamp;
+        const comments = session.comment;
+        if (!outTime) {
+          const dayEndOutTime = moment(attendance.date * 1000).tz(user.tz).endOf('day').unix();
+          // Checking if it's not today
+          if (moment().tz(user.tz).endOf('day').unix() !== dayEndOutTime) {
+            outTime = moment(attendance.date * 1000).tz(user.tz).endOf('day').unix();
+          }
+        }
+
+        const duration = outTime - inTime;
         totalTime += duration;
 
+        if (minStartingTime === 0 || inTime < minStartingTime) minStartingTime = inTime;
+        if (maxEndingTime === 0 || outTime > maxEndingTime) maxEndingTime = outTime;
+
+        minStartingTime = minStartingTime === 0 ? inTime : minStartingTime;
         return {
-          inTime: session.in_stamp,
-          outTime: session.out_stamp,
-          comments: session.comment,
+          inTime,
+          outTime,
+          comments,
           duration
         };
-      });
+      })) ?? [];
 
       userAttendanceData.total = convertSecondToHHMM(totalTime);
       return userAttendanceData;
     }));
 
-    return new APIResponse().success('Attendance data fetched successfully', { usersDailyData });
+    return new APIResponse()
+      .success('Attendance data fetched successfully',
+        {
+          usersDailyData,
+          minStartingTime,
+          maxEndingTime
+        });
   } catch (error) {
     return new APIResponse().error(error.statusCode, error.message);
   }

@@ -49,10 +49,12 @@ functions:
       - http:
           method: get
           path: ping
+          cors: true
   timesheet-daily:
     handler: src/api/functions/timesheets/timesheet-daily.handler
     events:
       - http:
           method: get
           path: admin/timesheet/daily/{date}
+          cors: true
           

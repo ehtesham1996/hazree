@@ -15,7 +15,8 @@
     "paths": {
       "@src/*": ["src/*"],
       "@queries/*": ["queries/*"],
-      "@tests/*": ["tests/*"]
+      "@tests/*": ["tests/*"],
+      "@functions/*": ["src/api/functions/*"]
     }
   },
   "include": ["./**/*.ts"],

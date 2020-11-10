@@ -3,7 +3,7 @@ service:
 
 package:
   individually: true
-  
+
 custom:
   webpack:
     webpackConfig: ./webpack.config.js
@@ -21,6 +21,7 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-prune-plugin
   - serverless-dotenv-plugin
+  - serverless-jest-plugin
 
 provider:
   name: aws
@@ -42,7 +43,7 @@ provider:
       Action:
         - xray:PutTraceSegments
         - xray:PutTelemetryRecords
-      Resource: "*"
+      Resource: '*'
 functions:
   ping:
     handler: src/api/functions/ping-pong/ping-pong.lambda.handler
@@ -56,4 +57,9 @@ functions:
       - http:
           method: get
           path: admin/timesheet/daily/{date}
-          
+  timesheet-monthly:
+    handler: src/api/functions/timesheets/timesheet-monthly.lambda.handler
+    events:
+      - http:
+          method: get
+          path: /admin/v1/timesheet/monthly/{date}

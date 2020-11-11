@@ -4,12 +4,13 @@
   "description": "Hazre project on serverless architecture. Copyright SOFTOO PVT LTD. Hazree is a simple attendance and time sheets managment system for employees",
   "scripts": {
     "start:dev": "serverless offline",
-    "start:debug" : "export SLS_DEBUG=* && node --inspect ./node_modules/.bin/serverless offline -s dev",
+    "start:debug": "export SLS_DEBUG=* && node --inspect ./node_modules/.bin/serverless offline -s dev",
     "test": "ENV=test ./node_modules/.bin/jest --ci --verbose",
     "test:watch": "ENV=test ./node_modules/.bin/jest --ci --verbose --watch",
     "test:coverage": "ENV=test ./node_modules/.bin/jest --ci --verbose --coverage",
     "lint": "eslint --fix --ignore-path .gitignore '**/*.ts'",
-    "buildtest": "tsc --noEmit"
+    "buildtest": "tsc --noEmit",
+    "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
   },
   "dependencies": {
     "@dazn/lambda-powertools-cloudwatchevents-client": "^1.26.0",

@@ -1,10 +1,21 @@
 import { APIGatewayProxyHandler, APIGatewayEvent, Context } from 'aws-lambda';
 import { UserModel, AttendanceModel, connectToDatabase } from '@src/database';
 import { BadRequestError } from '@src/core/errors';
-import { APIResponse } from '@src/core/types';
+import { APIResponse, UserBaseDataForTimeSheet } from '@src/core/types';
 import moment from 'moment-timezone';
 import 'source-map-support/register';
 import { convertSecondToHHMM } from '@src/core';
+import { extractUserBaseData } from './user-data-timesheet';
+
+interface Session {
+  inTime: number;
+  outTime: number;
+  comments: string;
+  duration: number;
+  displayDuration: string;
+}
+
+type UserDailyData = UserBaseDataForTimeSheet & { total: string; sessions: Session[] }
 
 /**
 * @description Timesheet function to return daily timesheet of all users in the
@@ -44,12 +55,10 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent, co
     let minStartingTime = 0;
     let maxEndingTime = 0;
 
-    const usersDailyData = await Promise.all(allUsers.map(async (user) => {
-      const userAttendanceData = {
-        name: user.real_name,
-        userId: user._id,
-        // For time being sending static avatar
-        imageUrl: 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200',
+    const usersDailyData: UserDailyData[] = await Promise.all(allUsers.map(async (user) => {
+      const userBaseData = extractUserBaseData(user);
+      const userAttendanceData: UserDailyData = {
+        ...userBaseData,
         total: '',
         sessions: []
       };
@@ -88,7 +97,8 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent, co
           inTime,
           outTime,
           comments,
-          duration
+          duration,
+          displayDuration: convertSecondToHHMM(duration)
         };
       })) ?? [];
 

@@ -6,7 +6,7 @@
     "plugin:import/warnings",
     "plugin:import/typescript",
     "plugin:@typescript-eslint/recommended"
-  ],
+    ],
   "plugins": [
     "jest",
     "@typescript-eslint"

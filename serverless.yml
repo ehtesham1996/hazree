@@ -3,7 +3,7 @@ service:
 
 package:
   individually: true
-  
+
 custom:
   webpack:
     webpackConfig: ./webpack.config.js
@@ -23,7 +23,7 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-prune-plugin
   - serverless-dotenv-plugin
-
+  
 provider:
   name: aws
   runtime: nodejs12.x
@@ -57,4 +57,17 @@ functions:
           method: get
           path: admin/timesheet/daily/{date}
           cors: true
-          
+  timesheet-monthly:
+    handler: src/api/functions/timesheets/timesheet-monthly.handler
+    events:
+      - http:
+          method: get
+          path: admin/timesheet/monthly/{date}
+          cors: true
+  timesheet-weekly:
+    handler: src/api/functions/timesheets/timesheet-weekly.handler
+    events:
+      - http:
+          method: get
+          path: admin/timesheet/weekly
+          cors: true

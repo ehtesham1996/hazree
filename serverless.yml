@@ -71,3 +71,10 @@ functions:
           method: get
           path: admin/timesheet/weekly
           cors: true
+  team-all-members:
+    handler: src/api/functions/teams/team-all-members.handler
+    events:
+      - http:
+          method: get
+          path: admin/teams/all-members
+          cors: true

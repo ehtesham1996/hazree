@@ -22,10 +22,10 @@
     "@dazn/lambda-powertools-pattern-basic": "^1.27.0",
     "@dazn/lambda-powertools-sns-client": "^1.26.0",
     "@dazn/lambda-powertools-sqs-client": "^1.26.0",
+    "aws-lambda": "^1.0.6",
+    "dynamoose": "github:dynamoose/dynamoose#master",
     "moment-timezone": "^0.5.31",
-    "mongoose": "^5.10.11",
-    "source-map-support": "^0.5.19",
-    "aws-lambda": "^1.0.6"
+    "source-map-support": "^0.5.19"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",

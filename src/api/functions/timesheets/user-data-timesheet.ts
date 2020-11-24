@@ -13,8 +13,8 @@ export function extractUserBaseData(user: UserDocument): UserBaseDataForTimeShee
   initials = initials.toUpperCase();
   return {
     name,
-    userId: user._id,
-    imageUrl: 'http://www.chicagohrs.com/wp-content/uploads/2017/05/Man-Placeholder.png',
+    userId: user.id,
+    imageUrl: user.profile_picture || 'https://randomuser.me/api/portraits/men/97.jpg',
     initials
 
   };

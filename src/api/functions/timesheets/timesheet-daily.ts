@@ -1,5 +1,7 @@
-import { APIGatewayProxyHandler, APIGatewayEvent, Context } from 'aws-lambda';
-import { UserModel, AttendanceModel, connectToDatabase } from '@src/database';
+import { APIGatewayProxyHandler, APIGatewayEvent } from 'aws-lambda';
+import {
+  UserModel, AttendanceModel, UserDocument, AttendanceDocument
+} from '@src/database';
 import { BadRequestError } from '@src/core/errors';
 import { APIResponse, UserBaseDataForTimeSheet } from '@src/core/types';
 import moment from 'moment-timezone';
@@ -21,7 +23,7 @@ type UserDailyData = UserBaseDataForTimeSheet & { total: string; sessions: Sessi
 * @description Timesheet function to return daily timesheet of all users in the
 *              work space
 */
-export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent, context: Context) => {
+export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent) => {
   try {
     console.log('Payload is ==>', event.pathParameters);
     const { date } = event.pathParameters;
@@ -30,7 +32,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent, co
      * For time being supposing admin user object until login credentials are finalized.
      */
     const requestingUser = new UserModel({
-      _id: 'adminId',
+      id: 'adminId',
       user_id: 'Admin',
       real_name: 'Admin',
       tz: 'Asia/Karachi'
@@ -43,11 +45,9 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent, co
       throw new BadRequestError('Please select valid date in format YYYY-MM-DD');
     }
 
-    await connectToDatabase(context);
-
     // Getting all employes from database with projection of their name
     // eslint-disable-next-line @typescript-eslint/camelcase
-    const allUsers = await UserModel.find();
+    const allUsers: UserDocument[] = await UserModel.scan().all().exec();
 
     const startDate = parsedDate.startOf('day').unix();
     const endDate = parsedDate.endOf('day').unix();
@@ -63,15 +63,25 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent, co
         sessions: []
       };
 
-      const query = {
-        team_id: user.team_id,
-        user_id: user.user_id,
-        date: {
-          $gte: startDate,
-          $lte: endDate
-        }
-      };
-      const attendance = await AttendanceModel.findOne(query);
+      // const query = {
+      //   team_id: user.team_id,
+      //   user_id: user.user_id,
+      //   date: {
+      //     $gte: startDate,
+      //     $lte: endDate
+      //   }
+      // };
+      const attendance: AttendanceDocument = (await AttendanceModel
+        .scan()
+        .where('team_id').eq(user.team_id)
+        .and()
+        .where('user_id')
+        .eq(user.user_id)
+        .and()
+        .where('date')
+        .between(startDate, endDate)
+        .all()
+        .exec())[0];
 
       let totalTime = 0;
       userAttendanceData.sessions = (attendance && attendance.sessions.map((session) => {
@@ -83,6 +93,8 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent, co
           // Checking if it's not today
           if (moment().tz(user.tz).endOf('day').unix() !== dayEndOutTime) {
             outTime = moment(attendance.date * 1000).tz(user.tz).endOf('day').unix();
+          } else {
+            outTime = moment().unix();
           }
         }
 

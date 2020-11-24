@@ -3,11 +3,10 @@ import {
   UserModel, AttendanceModel, UserDocument, AttendanceDocument
 } from '@src/database';
 import { BadRequestError } from '@src/core/errors';
-import { APIResponse, UserBaseDataForTimeSheet } from '@src/core/types';
+import { APIResponse, UserBaseData } from '@src/core/types';
 import moment from 'moment-timezone';
 import 'source-map-support/register';
-import { convertSecondToHHMM } from '@src/core';
-import { extractUserBaseData } from './user-data-timesheet';
+import { convertSecondToHHMM, extractUserBaseData } from '@src/core';
 
 interface Session {
   inTime: number;
@@ -17,7 +16,7 @@ interface Session {
   displayDuration: string;
 }
 
-type UserDailyData = UserBaseDataForTimeSheet & { total: string; sessions: Session[] }
+type UserDailyData = UserBaseData & { total: string; sessions: Session[] }
 
 /**
 * @description Timesheet function to return daily timesheet of all users in the

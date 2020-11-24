@@ -42,4 +42,5 @@ const schema = new dynamoose.Schema({
 
 export type UserDocument = User & Document;
 export type UserModel = ModelType<UserDocument>
+
 export const UserModel = dynamoose.model<UserDocument>('user', schema, { prefix: `${TABLE_PREFIX}` || 'dev_', create: false });

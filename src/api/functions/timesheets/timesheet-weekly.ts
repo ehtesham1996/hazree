@@ -4,11 +4,10 @@ import {
   APIGatewayProxyResult
 } from 'aws-lambda';
 import {
-  APIResponse, BadRequestError, convertSecondToHHMM, UserBaseDataForTimeSheet
+  APIResponse, BadRequestError, convertSecondToHHMM, extractUserBaseData, UserBaseData
 } from '@src/core';
 import moment from 'moment-timezone';
 import { AttendanceModel, UserModel } from '@src/database';
-import { extractUserBaseData } from './user-data-timesheet';
 
 interface WeekDays {
   saturday: string;
@@ -20,7 +19,7 @@ interface WeekDays {
   friday: string;
 }
 
-type UserWeeklyData = UserBaseDataForTimeSheet & { total: string } & WeekDays;
+type UserWeeklyData = UserBaseData & { total: string } & WeekDays;
 
 /**
  * @description Timesheets admin panel funtion to return monthly timesheets of users.

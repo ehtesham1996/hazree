@@ -4,11 +4,10 @@ import {
   APIGatewayProxyResult
 } from 'aws-lambda';
 import {
-  APIResponse, BadRequestError, convertSecondToHHMM, UserBaseDataForTimeSheet
+  APIResponse, BadRequestError, convertSecondToHHMM, extractUserBaseData, UserBaseData
 } from '@src/core';
 import moment from 'moment-timezone';
 import { AttendanceDocument, AttendanceModel, UserModel } from '@src/database';
-import { extractUserBaseData } from './user-data-timesheet';
 
 interface DailyData {
   hexColor: string;
@@ -38,7 +37,7 @@ const colorData = [{
   max: 27000,
   color: '#00366F'
 }];
-type UserMonthlyData = UserBaseDataForTimeSheet & { total: string; dailyData: DailyData[] }
+type UserMonthlyData = UserBaseData & { total: string; dailyData: DailyData[] }
 
 /**
  * @description Timesheets admin panel funtion to return monthly timesheets of users.

@@ -80,10 +80,10 @@ functions:
           method: get
           path: admin/teams/all-members
           cors: true
-  app:
+  bot:
     handler: src/bot/server.handler
     timeout: 30
     events:
-      - http: ANY /
-      - http: 'ANY {proxy+}'
+      - http: ANY bot/
+      - http: 'ANY bot/{proxy+}'
   

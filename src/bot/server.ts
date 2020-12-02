@@ -1,5 +1,4 @@
-import * as express from 'express';
-import { Application } from 'express';
+import express, { Application } from 'express';
 import * as bodyParser from 'body-parser';
 import serverless from 'serverless-http';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -19,7 +18,7 @@ require('dotenv').config();
 const app: Application = express();
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-app.use(router(Acl));
+app.use('/bot', router(Acl));
 
 const serverlessApp = serverless(app);
 const handler = async (event: APIGatewayProxyEvent | APIGatewayProxyEventV2, context: Context):

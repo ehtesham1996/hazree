@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import * as dynamoose from 'dynamoose';
 import { ModelType } from 'dynamoose/dist/General';
 import { Document } from 'dynamoose/dist/Document';

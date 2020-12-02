@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+/* eslint-disable @typescript-eslint/camelcase */
 import { UserCommand } from '@src/core';
 import { UserDocument, UserModel } from '@src/database/models';
 import { chatPostMarkdown, userInfo } from '../../slack/api';

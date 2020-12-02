@@ -7,7 +7,7 @@ export async function sendResponseAndSelfCall(req: Request, res: Response): Prom
   delete headers['content-length'];
   body.selfCall = true;
   const params = {
-    FunctionName: `hazree-bot-${process.env.ENV}-app`,
+    FunctionName: `hazree-backend-${process.env.ENV}-bot`,
     /* required */
     Payload: JSON.stringify({
       body,

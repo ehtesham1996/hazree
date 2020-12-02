@@ -1,5 +1,6 @@
 import { handler } from '@src/api/functions/timesheets/timesheet-monthly';
 import { APIGatewayEvent } from 'aws-lambda';
+// eslint-disable-next-line import/no-unresolved
 import * as context from 'aws-lambda-mock-context';
 
 describe('lambda ==> timesheet-monthly function tests', () => {

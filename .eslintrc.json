@@ -32,7 +32,8 @@
       "ignoreUrls": true,
       "ignoreStrings": true,
       "ignoreTemplateLiterals": true
-    }]
+    }],
+    "linebreak-style" : 0
   },
   "parser": "@typescript-eslint/parser",
   "env": {},
@@ -42,6 +43,7 @@
       "alias": {
         "map": [
           ["@src", "./src"],
+          ["@commands", "./src/bot/commands"],
           ["@tests", "./tests"],
           ["@queries", "./queries"]
         ],

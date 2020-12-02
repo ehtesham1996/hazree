@@ -23,7 +23,7 @@ const Color = {
   outColor: '#ccc'
 };
 
-type teamAllMembers = UserBaseData & {
+type teamAllMembersType = UserBaseData & {
   lastActivity: string;
   activitySince: string;
   activityDate: string;
@@ -51,7 +51,7 @@ export const handler: APIGatewayProxyHandler = async (): Promise<APIGatewayProxy
      */
     const allUsers: UserDocument[] = await UserModel.scan().all().exec();
 
-    const teamAllMembers: Array<teamAllMembers> = await Promise.all(
+    const teamAllMembers: Array<teamAllMembersType> = await Promise.all(
       allUsers.map(async (user) => {
         // const teamAllMemebers = await Promise.all(
         // allUsers.map(async (user) => {

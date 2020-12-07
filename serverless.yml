@@ -90,6 +90,6 @@ functions:
     handler: src/api/functions/auth/pre-signup-cognito-trigger.handler
     events:
       - cognitoUserPool:
-          pool: hazree-user-pool-${self:provider.stage}
+          pool: hazree-pool-user-${self:provider.stage}
           trigger: PreSignUp
           existing: true

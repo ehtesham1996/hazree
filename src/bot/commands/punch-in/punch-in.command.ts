@@ -1,26 +1,32 @@
 import moment from 'moment-timezone';
 import { UserCommand } from '@src/core';
-import { UserDocument, AttendanceModel, AttendanceDocument } from '@src/database/models';
-import { chatPostMessage } from '../../slack/api';
+import { AttendanceModel, AttendanceDocument, UsersDocument } from '@src/database/models';
+import { chatPostMessage, userInfo } from '../../slack/api';
 import { punchInMessage, markDownMessage } from '../../slack/templates';
 
-export async function punchIn(com: UserCommand, user: UserDocument): Promise<void> {
-  const timestamp = moment().tz(user.tz);
+export async function punchIn(com: UserCommand, user: UsersDocument): Promise<void> {
+  /**
+   * Getting time zone for user
+   */
+  const slackResponse = await userInfo(user.slack_data.slack_user_id);
+  const { tz } = slackResponse.data.user;
+  /** (End) getting time zone for user */
+
+  const timestamp = moment().tz(tz);
   const date = timestamp.clone().startOf('day').unix();
 
+  const teamId = ''; // For time being sending teamId as empty since
   const attendance: AttendanceDocument = (await AttendanceModel
-    .scan()
-    .where('team_id').eq(com.teamId)
-    .and()
+    .query()
     .where('user_id')
-    .eq(com.userId)
+    .eq(user.user_id)
     .and()
     .where('date')
     .eq(date)
     .all()
     .exec())[0]
     ?? new AttendanceModel({
-      team_id: com.teamId, user_id: com.userId, date, sessions: []
+      team_id: teamId, user_id: user.user_id, date, sessions: []
     });
   const pendingSession = attendance.sessions.find((s) => s.out_stamp === 0);
   if (!pendingSession) {

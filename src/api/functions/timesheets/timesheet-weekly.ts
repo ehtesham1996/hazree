@@ -7,7 +7,7 @@ import {
   APIResponse, BadRequestError, convertSecondToHHMM, extractUserBaseData, UserBaseData
 } from '@src/core';
 import moment from 'moment-timezone';
-import { AttendanceModel, UserModel } from '@src/database';
+import { AttendanceModel, UsersDocument, UsersModel } from '@src/database';
 
 interface WeekDays {
   saturday: string;
@@ -31,12 +31,12 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent): P
     /**
      * For time being supposing admin user object until login credentials are finalized.
      */
-    const requestingUser = new UserModel({
+    const requestingUser = {
       id: 'adminId',
       user_id: 'Admin',
       real_name: 'Admin',
       tz: 'Asia/Karachi'
-    });
+    };
 
     const dateParsed = moment().isoWeekYear(+isoWeekYear).isoWeek(+isoWeekNumber).tz(requestingUser.tz);
 
@@ -50,7 +50,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent): P
     /**
      * Get all users, and get all attendance for each user
      */
-    const allUsers = await UserModel.scan().all().exec();
+    const allUsers: UsersDocument[] = await UsersModel.scan().all().exec();
     const usersWeeklyData: Array<UserWeeklyData> = await Promise.all(allUsers.map(async (user) => {
       // const query = {
       //   team_id: user.team_id,
@@ -61,9 +61,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent): P
       //   }
       // };
       const attendances = await AttendanceModel
-        .scan()
-        .where('team_id').eq(user.team_id)
-        .and()
+        .query()
         .where('user_id')
         .eq(user.user_id)
         .and()
@@ -99,10 +97,10 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent): P
           (a, b) => {
             let outTime = b.out_stamp;
             if (!outTime) {
-              const dayEndOutTime = moment(currentDateData.date * 1000).tz(user.tz).endOf('day').unix();
+              const dayEndOutTime = moment(currentDateData.date * 1000).tz(requestingUser.tz).endOf('day').unix();
               // Checking if it's not today
-              if (moment().tz(user.tz).endOf('day').unix() !== dayEndOutTime) {
-                outTime = moment(currentDateData.date * 1000).tz(user.tz).endOf('day').unix();
+              if (moment().tz(requestingUser.tz).endOf('day').unix() !== dayEndOutTime) {
+                outTime = moment(currentDateData.date * 1000).tz(requestingUser.tz).endOf('day').unix();
               } else {
                 outTime = moment().unix();
               }

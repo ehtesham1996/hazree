@@ -86,4 +86,10 @@ functions:
     events:
       - http: ANY bot/
       - http: 'ANY bot/{proxy+}'
-  
+  pre-signup-cognito-trigger:
+    handler: src/api/functions/auth/pre-signup-cognito-trigger.handler
+    events:
+      - cognitoUserPool:
+          pool: hazree-user-pool-${self:provider.stage}
+          trigger: PreSignUp
+          existing: true

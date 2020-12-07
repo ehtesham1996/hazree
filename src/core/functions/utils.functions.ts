@@ -1,5 +1,5 @@
 import { UserBaseData } from '@src/core/types';
-import { UserDocument } from '@src/database';
+import { UsersDocument, USER_ROLES } from '@src/database';
 
 /**
  * @param seconds number of seconds to be converted to HH:MM
@@ -18,18 +18,18 @@ export function convertSecondToHHMM(seconds = 0): string {
  * @description This is a helper function that extract the basic user data required
  *              by the timesheet api's
  */
-export function extractUserBaseData(user: UserDocument): UserBaseData {
-  const name = user.display_name || user.real_name;
+export function extractUserBaseData(user: UsersDocument): UserBaseData {
+  const { name } = user;
 
   const [firstName, lastName] = name.split(' ', 2);
   let initials = firstName[0] + (lastName ? lastName[0] : firstName[1]);
   initials = initials.toUpperCase();
   return {
     name,
-    userId: user.id,
+    userId: user.user_id,
     imageUrl: user.profile_picture || 'https://randomuser.me/api/portraits/men/97.jpg',
     initials,
-    role: user.role
+    role: USER_ROLES.USER
   };
 }
 

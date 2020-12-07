@@ -1,28 +1,33 @@
 import moment from 'moment-timezone';
 import { UserCommand } from '@src/core';
-import { UserDocument, AttendanceModel, AttendanceDocument } from '@src/database/models';
-import { chatPostMessage, chatPostMarkdown } from '../../slack/api';
+import { UsersDocument, AttendanceModel, AttendanceDocument } from '@src/database/models';
+import { chatPostMessage, chatPostMarkdown, userInfo } from '../../slack/api';
 import { punchOutMessage } from '../../slack/templates';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-export async function punchOut(com: UserCommand, user: UserDocument): Promise<void> {
-  const timestamp = moment().tz(user.tz);
+export async function punchOut(com: UserCommand, user: UsersDocument): Promise<void> {
+  /**
+   * Getting time zone for user
+   */
+  const slackResponse = await userInfo(user.slack_data.slack_user_id);
+  const { tz } = slackResponse.data.user;
+  /** (End) getting time zone for user */
+
+  const teamId = ''; // For time being sending team id null
+  const timestamp = moment().tz(tz);
   const date = timestamp.clone().startOf('day').unix();
 
   const attendance: AttendanceDocument = (await AttendanceModel
-    .scan()
-    .where('team_id')
-    .eq(com.teamId)
-    .and()
+    .query()
     .where('user_id')
-    .eq(com.userId)
+    .eq(user.user_id)
     .and()
     .where('date')
     .eq(date)
     .all()
     .exec())[0]
     ?? new AttendanceModel({
-      team_id: com.teamId, user_id: com.userId, date, sessions: []
+      team_id: teamId, user_id: user.user_id, date, sessions: []
     });
 
   const workSessions = attendance.sessions.filter((s) => s.ses_type === 'work');
@@ -41,8 +46,8 @@ export async function punchOut(com: UserCommand, user: UserDocument): Promise<vo
   await attendance.save();
   await chatPostMessage(com.userId,
     punchOutMessage({
-      inTime: moment(currentSession.in_stamp * 1000).format('DD-MM-YYYY HH:mm:ss'),
-      outTime: moment(currentSession.out_stamp * 1000).format('DD-MM-YYYY HH:mm:ss'),
+      inTime: moment(workSessions[0].in_stamp * 1000).tz(tz).format('DD-MM-YYYY HH:mm:ss'),
+      outTime: moment(currentSession.out_stamp * 1000).tz(tz).format('DD-MM-YYYY HH:mm:ss'),
       sessionCount,
       totalHours,
       lastSessionDuration

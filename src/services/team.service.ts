@@ -2,7 +2,7 @@ import moment from 'moment-timezone';
 // eslint-disable-next-line import/no-unresolved
 import { v4 as uuidv4 } from 'uuid';
 import {
-  TeamModel, TeamDocument, UserModel, UserDocument
+  TeamModel, TeamDocument, UsersModel, UsersDocument
 } from '@src/database/models';
 import { UserCommand } from '@src/core';
 

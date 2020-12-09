@@ -1,5 +1,5 @@
 import { UserCommand } from '@src/core';
-import { User } from '@src/database';
+import { Users } from '@src/database';
 import { chatPostMarkdown } from '../../slack/api';
 
 const qoutes = [
@@ -20,7 +20,7 @@ const qoutes = [
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function randomResponse(command: UserCommand, _user: User | null): Promise<void> {
+export async function randomResponse(command: UserCommand, _user: Users | null): Promise<void> {
   const index = Math.floor(Math.random() * qoutes.length);
   const result = await chatPostMarkdown(command.channelId, qoutes[index]);
   console.log('Random response result ', JSON.stringify(result));

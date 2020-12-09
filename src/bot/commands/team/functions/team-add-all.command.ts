@@ -1,22 +1,15 @@
 import { allUsersInfo } from '@src/bot/slack/api/all-user-info.api';
 import { teamUserAddFailMessage, teamUserAddSuccessMessage } from '@src/bot/slack/templates';
 import { UserCommand } from '@src/core';
-import { UserDocument } from '@src/database/models';
-import { checkTeamService, addNewTeamService, addBulkMembersService } from '@src/services';
+import { UsersDocument } from '@src/database/models';
+import { checkTeamService, addBulkMembersService } from '@src/services';
 
-export async function teamAddAll(com: UserCommand, user: UserDocument): Promise<Array<any>> {
+export async function teamAddAll(com: UserCommand, user: UsersDocument): Promise<Array<any>> {
   try {
     const { parameters } = com;
     const teamName = parameters.slice(1, parameters.length - 1).join(' ');
-    console.log('teamName', teamName);
-    /**
-     * TEMPORARY
-     * Change it to user.user_id after user model update
-     */
-
-    const userUUID = user.id;
+    const userUUID = user.user_id;
     const teamExists = await checkTeamService(userUUID, teamName);
-    console.log('teamExists', teamExists);
 
     if (teamExists) {
       const allUsers = await allUsersInfo();

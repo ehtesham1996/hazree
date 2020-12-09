@@ -10,7 +10,7 @@ import {
 } from '@src/core';
 import moment from 'moment-timezone';
 import {
-  AttendanceDocument, AttendanceModel, UserDocument, UserModel
+  AttendanceDocument, AttendanceModel, UsersDocument, UsersModel
 } from '@src/database';
 import { SortOrder } from 'dynamoose/dist/General';
 
@@ -36,20 +36,21 @@ type teamAllMembersType = UserBaseData & {
  */
 export const handler: APIGatewayProxyHandler = async (): Promise<APIGatewayProxyResult> => {
   try {
+    const tz = 'Asia/Karachi';
+
     /**
      * For time being supposing admin user object until login credentials are finalized.
      */
-    const requestingUser = new UserModel({
-      _id: 'adminId',
-      user_id: 'Admin',
-      real_name: 'Admin',
-      tz: 'Asia/Karachi'
-    });
+    // const requestingUser = new UsersModel({
+    //   user_id: 'Admin',
+    //   name: 'Admin',
+    //   tz: 'Asia/Karachi'
+    // });
 
     /**
      * Get all users.
      */
-    const allUsers: UserDocument[] = await UserModel.scan().all().exec();
+    const allUsers: UsersDocument[] = await UsersModel.scan().all().exec();
 
     const teamAllMembers: Array<teamAllMembersType> = await Promise.all(
       allUsers.map(async (user) => {
@@ -68,9 +69,6 @@ export const handler: APIGatewayProxyHandler = async (): Promise<APIGatewayProxy
         const attendances: AttendanceDocument[] = await AttendanceModel
           .query('user_id')
           .eq(user.user_id)
-          .and()
-          .where('team_id')
-          .eq(user.team_id)
           .sort(SortOrder.descending)
           .exec();
 
@@ -80,20 +78,20 @@ export const handler: APIGatewayProxyHandler = async (): Promise<APIGatewayProxy
             lastActivity = 'out';
             activitySince = timeSince(lastSession.out_stamp * 1000);
             time = moment(lastSession.out_stamp * 1000)
-              .tz(requestingUser.tz)
+              .tz(tz)
               .format('HH:MM');
             activityDate = moment(lastSession.out_stamp * 1000)
-              .tz(requestingUser.tz)
+              .tz(tz)
               .format('MM-DD-YYYY');
             color = Color.outColor;
           } else if (lastSession.in_stamp > 0 && lastSession.out_stamp === 0) {
             lastActivity = 'in';
             activitySince = timeSince(lastSession.in_stamp * 1000);
             time = moment(lastSession.in_stamp * 1000)
-              .tz(requestingUser.tz)
+              .tz(tz)
               .format('HH:MM');
             activityDate = moment(lastSession.in_stamp * 1000)
-              .tz(requestingUser.tz)
+              .tz(tz)
               .format('MM-DD-YYYY');
             color = Color.inColor;
           }

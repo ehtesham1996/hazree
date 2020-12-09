@@ -1,12 +1,12 @@
 import { allUsersInfo } from '@src/bot/slack/api/all-user-info.api';
 import { teamInvalidParameters } from '@src/bot/slack/templates';
 import { UserCommand } from '@src/core';
-import { UserDocument } from '@src/database/models';
+import { UsersDocument } from '@src/database/models';
 import { chatPostMessage } from '../../slack/api';
 import { teamAddAll, teamCreate } from './functions';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-export async function team(com: UserCommand, user: UserDocument): Promise<void> {
+export async function team(com: UserCommand, user: UsersDocument): Promise<void> {
   const { parameters } = com;
   let teamResp: Array<any> = [];
 

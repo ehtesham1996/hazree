@@ -22,7 +22,6 @@ custom:
 plugins:
   - serverless-offline
   - serverless-webpack
-  - serverless-iam-roles-per-function
   - serverless-prune-plugin
   - serverless-dotenv-plugin
   
@@ -88,8 +87,31 @@ functions:
       - http: 'ANY bot/{proxy+}'
   pre-signup-cognito-trigger:
     handler: src/api/functions/auth/pre-signup-cognito-trigger.handler
+    # events:
+    #   - cognitoUserPool:
+    #       pool: hazree-pool-user-${self:provider.stage}
+    #       trigger: PreSignUp
+    #       existing: true
+
+  get-profile:
+    handler: src/api/functions/profile/get-profile.handler
     events:
-      - cognitoUserPool:
-          pool: hazree-pool-user-${self:provider.stage}
-          trigger: PreSignUp
-          existing: true
+     - http:
+          method: get
+          path: profile
+          cors: true
+          authorizer:
+            arn: ${self:provider.environment.COGNITO_USER_POOL_ARN}
+
+resources:
+  Resources:
+    GatewayResponse:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId: 
+          Ref: 'ApiGatewayRestApi'
+        StatusCode: '401'

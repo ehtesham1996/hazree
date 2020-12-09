@@ -51,6 +51,21 @@ export class APIResponse implements APIGatewayProxyResult {
     return this.build;
   }
 
+  unAuthorized(message = 'Internal server error occurred'): APIGatewayProxyResult {
+    this.headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true
+    };
+    this.statusCode = 401;
+    this.apiResponse = {
+      error: true,
+      success: false,
+      message
+    };
+
+    return this.build;
+  }
+
   setHeaders(headers: { [header: string]: string | number | boolean } = {}): APIResponse {
     this.headers = headers;
     this.headers['Access-Control-Allow-Origin'] = '*';

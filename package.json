@@ -32,6 +32,7 @@
     "dynamoose": "^2.4.1",
     "express": "^4.17.1",
     "lodash": "^4.17.20",
+    "middy": "^0.36.0",
     "moment-timezone": "^0.5.31",
     "serverless-http": "^2.6.0",
     "source-map-support": "^0.5.19",

@@ -22,10 +22,6 @@ app.use('/bot', router(Acl));
 
 const serverlessApp = serverless(app);
 const handler = async (event: APIGatewayProxyEvent | APIGatewayProxyEventV2, context: Context):
-Promise<APIGatewayProxyResult | APIGatewayProxyStructuredResultV2> => {
-  console.log(event);
-
-  return serverlessApp(event, context);
-};
+Promise<APIGatewayProxyResult | APIGatewayProxyStructuredResultV2> => serverlessApp(event, context);
 
 export { handler };

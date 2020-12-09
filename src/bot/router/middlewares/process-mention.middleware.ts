@@ -6,7 +6,7 @@ export async function processMention(req: Request, res: Response, next: () => vo
     res.locals.slack_command = parseEvent(req);
     next();
   } catch (err) {
-    console.log(err);
+    console.log('Error Message PMM: ', err.message);
     res.status(500).json({ error: 'internal error' });
   }
 }

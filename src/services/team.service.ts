@@ -1,10 +1,11 @@
 import moment from 'moment-timezone';
-// eslint-disable-next-line import/no-unresolved
 import { v4 as uuidv4 } from 'uuid';
 import {
-  TeamModel, TeamDocument, UsersModel, UsersDocument
+  TeamModel,
+  TeamDocument
 } from '@src/database/models';
 import { UserCommand } from '@src/core';
+import dynamoose from 'dynamoose';
 
 export async function addNewTeamService(com: UserCommand, teamName: string, userUUID: string): Promise<TeamDocument> {
   const newItem = {
@@ -44,6 +45,36 @@ export async function checkTeamService(createdById: string, teamName: string): P
     return true;
   }
   return false;
+}
+
+export async function getUserTeams(
+  userId: string,
+  adminOnly = false,
+  count = false,
+  teamName?: string
+): Promise<TeamDocument[] | number> {
+  console.log('Payload GetUserTeams ==> ', userId);
+
+  const query = new dynamoose.Condition()
+    .where('admins').contains(userId);
+
+  if (!adminOnly) {
+    query.or().where('members').contains(userId);
+  }
+
+  if (teamName) {
+    query.and().where('name').eq(teamName);
+  }
+
+  let result: TeamDocument[] | number;
+  if (count) {
+    result = (await TeamModel.scan(query).all().count().exec()).count;
+  } else {
+    result = await TeamModel.scan(query).all().exec();
+  }
+
+  console.log('Get user teams result is ', result);
+  return result;
 }
 
 export async function addBulkMembersService(userUUID: string, teamName: string, userEmails: Array<string>): Promise<TeamDocument> {

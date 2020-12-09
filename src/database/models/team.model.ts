@@ -1,5 +1,6 @@
 import dynamoose from 'dynamoose';
 import { Document } from 'dynamoose/dist/Document';
+import { ModelType } from 'dynamoose/dist/General';
 import { TABLE_PREFIX } from '../functions';
 
 export type TeamDocument = Document & {
@@ -51,4 +52,5 @@ const schema = new dynamoose.Schema({
   }
 });
 
+export type TeamModel = ModelType<TeamDocument>
 export const TeamModel = dynamoose.model<TeamDocument>('team', schema, { prefix: TABLE_PREFIX, create: false });

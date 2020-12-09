@@ -27,7 +27,6 @@ const SlackMessage = type({
 });
 
 export function parseEvent({ body }: { body: any }): UserCommand {
-  console.log('bb: ', body);
   assert(body, SlackMessage);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [botuuid, command, ...parameters] = body.event.text.split(' ');

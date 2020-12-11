@@ -9,6 +9,7 @@ describe('lambda ==> timesheet-monthly function tests', () => {
       body: "{\"error\":true,\"success\":false,\"message\":\"Cannot destructure property `date` of 'undefined' or 'null'.\"}",
       headers: {
         'Access-Control-Allow-Credentials': true,
+        'Access-Control-Allow-Headers': '*',
         'Access-Control-Allow-Origin': '*'
       },
       isBase64Encoded: undefined,

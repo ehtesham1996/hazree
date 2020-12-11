@@ -36,27 +36,31 @@ export function extractUserBaseData(user: UsersDocument, role = USER_ROLES.USER)
 export function timeSince(date): string {
   const seconds = Math.floor((new Date().getTime() - date) / 1000);
 
+  if (Number.isNaN(seconds) || date === 0) {
+    return 'now';
+  }
+
   let interval = seconds / 31536000;
 
-  if (interval > 1) {
+  if (interval >= 1) {
     return `${Math.floor(interval)} years ago`;
   }
   interval = seconds / 2592000;
-  if (interval > 1) {
+  if (interval >= 1) {
     return `${Math.floor(interval)} months ago`;
   }
   interval = seconds / 86400;
-  if (interval > 2) {
+  if (interval >= 2) {
     return `${Math.floor(interval)} days ago`;
-  } if (interval > 0) {
+  } if (interval >= 1) {
     return 'Yesterday';
   }
   interval = seconds / 3600;
-  if (interval > 1) {
+  if (interval >= 1) {
     return `${Math.floor(interval)} hours ago`;
   }
   interval = seconds / 60;
-  if (interval > 1) {
+  if (interval >= 1) {
     return `${Math.floor(interval)} minutes ago`;
   }
   return `${Math.floor(seconds)} seconds ago`;

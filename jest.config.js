@@ -3,6 +3,7 @@ module.exports = {
   transform: {
     '^.+\\.ts?$': 'babel-jest'
   },
+  collectCoverageFrom: ['src/**/*.ts'],
   moduleNameMapper: {
     // Jest needs to know about module aliasing as it doesn't run after webpack magic
     '^@repositories/(.*)$': '<rootDir>/src/repositories/$1',

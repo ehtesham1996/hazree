@@ -1,19 +1,22 @@
 import { teamListSuccessMessage, teamNoListMessage } from '@src/bot/slack/templates';
 import { UserCommand } from '@src/core';
 import { UsersDocument } from '@src/database/models';
+import * as teamService from '@src/services/team.service';
 
-export async function teamListMyTeams(com: UserCommand, user: UsersDocument): Promise<Array<any>> {
+export async function teamListMyTeams(_com: UserCommand, user: UsersDocument): Promise<Array<any>> {
   try {
-    console.log(com, user);
     /**
-     * Add team list service here
+     * Calling team list service here
      */
-    const teamListNames = [];
-    if (teamListNames.length > 0) {
+    const teams = await teamService.getUserTeams(user.user_id, false, false);
+
+    const teamList = [];
+    teams.forEach((team) => teamList.push(team.name));
+    if (teamList.length > 0) {
       /**
-       * Format to return team list
+       * Returning teams response
        */
-      return teamListSuccessMessage(['Team 1', 'Team 2']);
+      return teamListSuccessMessage(teamList);
     }
     return teamNoListMessage();
   } catch (error) {

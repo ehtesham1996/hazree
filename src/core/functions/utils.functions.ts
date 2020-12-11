@@ -2,7 +2,7 @@ import { UserBaseData } from '@src/core/types';
 import { UsersDocument, USER_ROLES } from '@src/database';
 
 /**
- * @param seconds number of seconds to be converted to HH:MM
+ * @param seconds number of seconds to be converted to HH::MM
  * @description This utiltiy function convert the number of seconds to HH:MM format
  */
 export function convertSecondToHHMM(seconds = 0): string {
@@ -18,7 +18,7 @@ export function convertSecondToHHMM(seconds = 0): string {
  * @description This is a helper function that extract the basic user data required
  *              by the timesheet api's
  */
-export function extractUserBaseData(user: UsersDocument): UserBaseData {
+export function extractUserBaseData(user: UsersDocument, role = USER_ROLES.USER): UserBaseData {
   const { name } = user;
 
   const [firstName, lastName] = name.split(' ', 2);
@@ -29,7 +29,7 @@ export function extractUserBaseData(user: UsersDocument): UserBaseData {
     userId: user.user_id,
     imageUrl: user.profile_picture || 'https://randomuser.me/api/portraits/men/97.jpg',
     initials,
-    role: USER_ROLES.USER
+    role
   };
 }
 

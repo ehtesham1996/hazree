@@ -1,9 +1,9 @@
 import { AxiosResponse } from 'axios';
 import { axiosInstance } from '../functions';
 
-export async function allUsersInfo(): Promise<AxiosResponse> {
+export async function channelMembers(channelId: string): Promise<AxiosResponse> {
   return axiosInstance.request({
     method: 'get',
-    url: '/users.list'
+    url: `/conversations.members?channel=${channelId}`
   });
 }

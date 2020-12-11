@@ -5,10 +5,9 @@ import { APIGatewayAuthenticatedEvent, APIResponse } from '@src/core';
 
 const authorize: middy.Middleware<any, any> = () => {
   const middlewareObject: middy.MiddlewareObject<any, any> = {
-    before: async (handler: middy.HandlerLambda<APIGatewayAuthenticatedEvent, any>, next) => {
+    before: async (handler: middy.HandlerLambda<APIGatewayAuthenticatedEvent, any>): Promise<any> => {
       try {
         const userId = handler.event.requestContext.authorizer?.claims?.['cognito:username'];
-        console.log(handler.event.requestContext.authorizer);
 
         if (!userId) throw new Error('Request not authorized');
 
@@ -17,11 +16,9 @@ const authorize: middy.Middleware<any, any> = () => {
         if (!userData) throw new Error('Invalid user');
 
         handler.event.user = userData;
-
-        return next();
       } catch (error) {
         const response = new APIResponse().unAuthorized(error.message);
-        return handler.callback(null, response);
+        handler.callback(null, response);
       }
     }
   };

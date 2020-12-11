@@ -6,7 +6,7 @@ import { TABLE_PREFIX } from '../functions';
 export type TeamDocument = Document & {
   id: string;
   name: string;
-  slack_team_id: string;
+  // slack_team_id: string;
   created_by: string;
   created_date: number;
   admins: Array<string>;
@@ -24,9 +24,9 @@ const schema = new dynamoose.Schema({
     required: true,
     type: String
   },
-  slack_team_id: {
-    type: String
-  },
+  // slack_team_id: {
+  //   type: String
+  // },
   created_by: {
     required: true,
     type: String

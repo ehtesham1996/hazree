@@ -1,18 +1,22 @@
 import {
-  APIGatewayProxyHandler,
   APIGatewayProxyResult
 } from 'aws-lambda';
 import {
+  APIGatewayAuthenticatedHandler,
   APIResponse,
+  BadRequestError,
   extractUserBaseData,
   timeSince,
   UserBaseData
 } from '@src/core';
 import moment from 'moment-timezone';
 import {
-  AttendanceDocument, AttendanceModel, UsersDocument, UsersModel
+  AttendanceDocument, AttendanceModel
 } from '@src/database';
 import { SortOrder } from 'dynamoose/dist/General';
+import middy from 'middy';
+import * as teamService from '@src/services/team.service';
+import authorize from '../auth/authorize.middleware';
 
 /**
  * Color variable used for teams page
@@ -29,39 +33,43 @@ type teamAllMembersType = UserBaseData & {
   activityDate: string;
   time: string;
   color: string;
+  deletable: boolean;
 };
 
 /**
  * @description Admin portal, Get all members of a team.
  */
-export const handler: APIGatewayProxyHandler = async (): Promise<APIGatewayProxyResult> => {
+const GetTeamMembers: APIGatewayAuthenticatedHandler = async (event): Promise<APIGatewayProxyResult> => {
   try {
-    const tz = 'Asia/Karachi';
+    const { tz } = event.headers;
+    const {
+      user_id: userId = ''
+    } = event.user;
+    const {
+      teamId = ''
+    } = event.queryStringParameters;
 
-    /**
-     * For time being supposing admin user object until login credentials are finalized.
-     */
-    // const requestingUser = new UsersModel({
-    //   user_id: 'Admin',
-    //   name: 'Admin',
-    //   tz: 'Asia/Karachi'
-    // });
+    if (moment.tz.zone(tz) === null) {
+      throw new BadRequestError('Invalid timezone specified to fetch data');
+    }
 
-    /**
-     * Get all users.
-     */
-    const allUsers: UsersDocument[] = await UsersModel.scan().all().exec();
+    if (!teamId) throw new BadRequestError('Invalid team specified to fetch member');
+
+    const teamMemberData = await teamService.getTeamMembers(teamId, userId);
+    const { members: allUsers, teamData } = teamMemberData;
 
     const teamAllMembers: Array<teamAllMembersType> = await Promise.all(
       allUsers.map(async (user) => {
-        // const teamAllMemebers = await Promise.all(
-        // allUsers.map(async (user) => {
-        const userBaseData = extractUserBaseData(user);
-        let lastActivity = 'N/A';
-        let activitySince = 'N/A';
-        let activityDate = 'N/A';
+        // Extracting user data
+        const userBaseData = extractUserBaseData(
+          user,
+          teamData.admins.includes(user.user_id) ? 'Team Admin' : 'Member'
+        );
+        let lastActivity = '';
+        let activitySince = '';
+        let activityDate = '';
         let time = '00:00';
-        let color = 'N/A';
+        let color = '';
 
         /**
          * Get latest entry
@@ -95,15 +103,6 @@ export const handler: APIGatewayProxyHandler = async (): Promise<APIGatewayProxy
               .format('MM-DD-YYYY');
             color = Color.inColor;
           }
-
-          return {
-            ...userBaseData,
-            lastActivity,
-            activitySince,
-            activityDate,
-            time,
-            color
-          };
         }
         return {
           ...userBaseData,
@@ -111,13 +110,16 @@ export const handler: APIGatewayProxyHandler = async (): Promise<APIGatewayProxy
           activitySince,
           activityDate,
           time,
-          color
+          color,
+          deletable: !teamData.admins.includes(user.user_id)
         };
       })
     );
 
-    return new APIResponse().success('OK', { teamAllMembers });
+    return new APIResponse().success(`${teamAllMembers.length} member(s) data found`, { teamAllMembers });
   } catch (error) {
     return new APIResponse().error(error.statusCode, error.message);
   }
 };
+
+export const handler = middy(GetTeamMembers).use(authorize());

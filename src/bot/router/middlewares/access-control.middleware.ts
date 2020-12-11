@@ -9,6 +9,7 @@ import { randomResponse } from '../../bot-ai';
 export function accessControl(aclist: AclList) {
   return async (req: Request, res: Response): Promise<void> => {
     try {
+      console.log('acl called');
       const { selfCall } = req.body;
       if (!selfCall) {
         res.send('ok');

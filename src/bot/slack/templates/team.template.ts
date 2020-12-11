@@ -3,13 +3,16 @@
  *
  */
 
+import { APP_NAME } from '@src/core';
+import { UsersDocument } from '@src/database';
+
 export function teamInvalidParameters(): Array<any> {
   return [
     {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: '>Incomplete team command.\n\nCOMMANDS:\n\t`team create`\t\t\t#Creates a new team on hazree portal\n\t`team add Team Name @all`\t\t\t#Adds all members to existing team\n\t`team add Team Name @member1 @member2`\t\t\t#Adds mentioned members to existing team\n\t`team remove Team Name @member1 @member2`\t\t\t#Removes mentioned members from existing team\n\t`team list`\t\t\t#Lists all your teams'
+        text: `>Incomplete team command.\n Please try command \`@${APP_NAME} team help\``
       }
     }
   ];
@@ -133,4 +136,44 @@ export function teamListFailMessage(message = ''): Array<any> {
       }
     }
   ];
+}
+
+export function teamMemberListMessage(members: UsersDocument[]): Array<any> {
+  const blocks: any = [
+    {
+      type: 'header',
+      text: {
+        type: 'plain_text',
+        text: 'Team Members',
+        emoji: true
+      }
+    },
+    {
+      type: 'divider'
+    }
+  ];
+
+  if (members.length === 0) {
+    blocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: '*No Members*'
+      }
+    });
+  }
+
+  members.forEach((member, index) => {
+    blocks.push(
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `${index + 1}. *${member.name}*`
+        }
+      }
+    );
+  });
+
+  return blocks;
 }

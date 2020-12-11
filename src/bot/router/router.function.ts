@@ -11,11 +11,13 @@ import { sendResponseAndSelfCall } from './functions';
 export function router(routes: AclList): Router {
   const expRouter = express.Router();
   const acl = accessControl(routes);
-  expRouter.get('/ping2', pong);
+  expRouter.get('/ping', pong);
   if (process.env.IS_OFFLINE) {
+    console.log('Proccessing /mention offline');
     expRouter.post('/mention', handleChallange, processMention, acl);
   } else {
-    expRouter.post('/mention', sendResponseAndSelfCall);
+    console.log('Processing /mention online');
+    expRouter.post('/mention', handleChallange, sendResponseAndSelfCall);
     expRouter.post('/mention-call-back', handleChallange, processMention, acl);
   }
 

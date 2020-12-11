@@ -13,7 +13,7 @@ export async function sendResponseAndSelfCall(req: Request, res: Response): Prom
       body,
       headers,
       httpMethod: 'POST',
-      path: '/mention-call-back'
+      path: '/bot/mention-call-back'
     })
   };
 

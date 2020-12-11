@@ -11,6 +11,7 @@ const Challenge = object({
 
 export function handleChallange(req: Request, res: Response, next: () => void): void {
   try {
+    console.log('Handle challenge middlware called');
     if (req.body?.type === 'url_verification') {
       assert(req.body, Challenge);
       res.json({ challenge: req.body.challenge });

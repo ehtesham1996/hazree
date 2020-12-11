@@ -5,13 +5,15 @@ import { chatPostMessage } from '../../slack/api';
 import {
   teamAddAll, teamCreate, teamAddMentionedMember, teamListMyTeams
 } from './functions';
+import { teamHelp } from './functions/team-help.command';
+import { teamListTeamMember } from './functions/team-members.command';
 import { teamRemoveMember } from './functions/team-remove-member.command';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
 export async function team(com: UserCommand, user: UsersDocument): Promise<void> {
   const { parameters } = com;
   let teamResp: Array<any> = [];
-
+  let channelPost = true;
   if (parameters.length >= 2 && parameters[0] === 'create') {
     /**
      * Team Create Command: Parameters must contain ['create', 'teamname']
@@ -46,10 +48,23 @@ export async function team(com: UserCommand, user: UsersDocument): Promise<void>
      * Team List My Teams Command: Parameters must contain ['list']
      * eg1: ['list']
     */
+    channelPost = false;
     teamResp = await teamListMyTeams(com, user);
+  } else if (parameters.length >= 2 && parameters[0] === 'member') {
+    /**
+     * Team Member List Command: Parameters must contain ['member' , 'teamname']
+     * eg1: ['member','NameOfTeam']
+    */
+    channelPost = false;
+    teamResp = await teamListTeamMember(com, user);
+  } else if (parameters.length === 1 && parameters[0] === 'help') {
+    /**
+     * Team Helo Command: Parameters must contain ['help']
+     * eg1: ['help']
+    */
+    teamResp = await teamHelp(com, user);
   } else {
     teamResp = teamInvalidParameters();
   }
-
-  await chatPostMessage(com.channelId, teamResp);
+  await chatPostMessage(channelPost ? com.channelId : com.userId, teamResp);
 }

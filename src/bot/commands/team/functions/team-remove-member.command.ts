@@ -1,4 +1,7 @@
-import { teamUserRemoveFailMessage, teamUserRemoveSuccessMessage } from '@src/bot/slack/templates';
+import {
+  markDownMessage,
+  teamUserRemoveFailMessage
+} from '@src/bot/slack/templates';
 import { UserCommand } from '@src/core';
 import { UsersDocument } from '@src/database/models';
 import { checkTeamService } from '@src/services';
@@ -11,13 +14,13 @@ export async function teamRemoveMember(com: UserCommand, user: UsersDocument): P
     const teamExists = await checkTeamService(userUUID, teamName);
 
     if (teamExists) {
-      const userIds = parameters.filter((item) => item.startsWith('<@') && item.endsWith('>'));
+      // const userIds = parameters.filter((item) => item.startsWith('<@') && item.endsWith('>'));
 
       /**
        * Remove team member service will go here.
        */
-
-      return teamUserRemoveSuccessMessage(teamName, userIds);
+      return markDownMessage('>Feature in development. For time being you can use portal to remove user');
+      // return teamUserRemoveSuccessMessage(teamName, userIds);
     }
     return teamUserRemoveFailMessage(`Cannot find team \`${teamName}\`, it does not exist or you do not have permission!`);
   } catch (error) {

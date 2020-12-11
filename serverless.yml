@@ -11,13 +11,9 @@ custom:
       forceExclude:
         - aws-sdk
     excludeFiles: '**/*.test.ts' #Excluding test files in the final build
-  serverless-iam-roles-per-function:
-    defaultInherit: true # Each function will inherit the service level roles too.
   prune:
     automatic: true
     number: 3
-  serverless-offline:
-    httpPort: 4000
 
 plugins:
   - serverless-offline
@@ -38,7 +34,6 @@ provider:
     name: com.serverless.hazree.deploys # Change with the project name
     maxPreviousDeploymentArtifacts: 3
   environment:
-    DEBUG: '*'
     ENV: ${self:provider.stage}
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
   role: arn:aws:iam::428694752194:role/cloud9-helloWorld-helloRole-1ES8HB9ZW7VZD
@@ -72,19 +67,16 @@ functions:
           method: get
           path: admin/timesheet/weekly
           cors: true
-  team-all-members:
-    handler: src/api/functions/teams/team-all-members.handler
-    events:
-      - http:
-          method: get
-          path: admin/teams/all-members
-          cors: true
   bot:
     handler: src/bot/server.handler
     timeout: 30
     events:
-      - http: ANY bot/
-      - http: 'ANY bot/{proxy+}'
+      - http: 
+          method: any
+          path: bot  
+      - http: 
+          method: any
+          path: bot/{proxy+}
   pre-signup-cognito-trigger:
     handler: src/api/functions/auth/pre-signup-cognito-trigger.handler
     # events:
@@ -100,6 +92,78 @@ functions:
           method: get
           path: profile
           cors: true
+          authorizer:
+            arn: ${self:provider.environment.COGNITO_USER_POOL_ARN}
+  team-get:
+    handler: src/api/functions/teams/team-get.handler
+    events:
+     - http:
+          method: get
+          path: team
+          cors: true
+          authorizer:
+            arn: ${self:provider.environment.COGNITO_USER_POOL_ARN}
+  team-post:
+    handler: src/api/functions/teams/team-post.handler
+    events:
+     - http:
+          method: post
+          path: team
+          cors: true
+          authorizer:
+            arn: ${self:provider.environment.COGNITO_USER_POOL_ARN}
+  team-invitation-get:
+    handler: src/api/functions/teams/team-invitation-get.handler
+    events:
+     - http:
+          method: get
+          path: team/invitations
+          cors: true
+          authorizer:
+            arn: ${self:provider.environment.COGNITO_USER_POOL_ARN}
+  team-invitation-update:
+    handler: src/api/functions/teams/team-invitation-update.handler
+    events:
+     - http:
+          method: post
+          path: team/invitations
+          cors: true
+          authorizer:
+            arn: ${self:provider.environment.COGNITO_USER_POOL_ARN}
+  team-member-get:
+    handler: src/api/functions/teams/team-member-get.handler
+    events:
+     - http:
+          method: get
+          path: team/members
+          cors:
+            origin: "*"
+            headers: 
+              - "*"
+          authorizer:
+            arn: ${self:provider.environment.COGNITO_USER_POOL_ARN}
+  team-member-post:
+    handler: src/api/functions/teams/team-member-post.handler
+    events:
+     - http:
+          method: post
+          path: team/members
+          cors:
+            origin: "*"
+            headers: 
+              - "*"
+          authorizer:
+            arn: ${self:provider.environment.COGNITO_USER_POOL_ARN}
+  team-member-delete:
+    handler: src/api/functions/teams/team-member-delete.handler
+    events:
+     - http:
+          method: delete
+          path: team/members
+          cors:
+            origin: "*"
+            headers: 
+              - "*"
           authorizer:
             arn: ${self:provider.environment.COGNITO_USER_POOL_ARN}
 

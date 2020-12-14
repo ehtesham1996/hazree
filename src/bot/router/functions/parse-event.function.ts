@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   string, number, optional, type, assert
 } from 'superstruct';
@@ -28,8 +29,11 @@ const SlackMessage = type({
 
 export function parseEvent({ body }: { body: any }): UserCommand {
   assert(body, SlackMessage);
+  console.log('Body text is', body.event.text);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [botuuid, command, ...parameters] = body.event.text.split(' ');
+  // eslint-disable-next-line no-control-regex
+  const [botuuid, command, ...parameters] = body.event.text.replace(/[^\x00-\x7F]/g, ' ').split(' ');
   return ({
     teamId: body.team_id,
     userId: body.event.user,

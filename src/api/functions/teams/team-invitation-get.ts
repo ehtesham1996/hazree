@@ -16,20 +16,16 @@ const GetTeamInvitations: APIGatewayAuthenticatedHandler = async (event) => {
 
   const teams = await teamService.getUserPendingTeam(email);
 
-  if (teams.length > 0) {
-    const teamsData = teams.map((team) => ({
-      teamId: team.id,
-      teamName: team.name
-    }));
+  const teamsData = teams.map((team) => ({
+    teamId: team.id,
+    teamName: team.name
+  })) || [];
 
-    return new APIResponse()
-      .success(`${teamsData.length} team(s) invitation found`,
-        {
-          invitations: teamsData
-        });
-  }
-
-  return new APIResponse().error(404, 'No teams found');
+  return new APIResponse()
+    .success(`${teamsData.length} team(s) invitation found`,
+      {
+        invitations: teamsData
+      });
 };
 
 export const handler = middy(GetTeamInvitations).use(authorize());

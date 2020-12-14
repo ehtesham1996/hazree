@@ -8,6 +8,7 @@ import middy from 'middy';
 import 'source-map-support/register';
 import authorize from '@src/api/functions/auth/authorize.middleware';
 import * as teamService from '@src/services/team.service';
+import { TeamDocument } from '@src/database';
 
 /**
  * @description A simple get teams lambda function that is called when
@@ -28,9 +29,12 @@ const PostTeam: APIGatewayAuthenticatedHandler = async (event) => {
     const teamExists = await teamService.getUserTeams(userId, false, true, teamName);
     if (teamExists) throw new HttpAlreadyExistsError(`A team with name ${teamName} already exists`);
 
-    await teamService.addNewTeam(teamName, userId);
+    const teamData: TeamDocument = await teamService.addNewTeam(teamName, userId);
     return new APIResponse()
-      .success(`Team ${teamName} created succesfully`);
+      .success(`Team ${teamName} created succesfully`, {
+        teamId: teamData.id,
+        teamName: teamData.name
+      });
   } catch (error) {
     return new APIResponse().error(error.statusCode, error.message);
   }

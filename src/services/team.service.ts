@@ -107,7 +107,7 @@ export async function addBulkMembersService(
   memberEmails: Array<string>,
   teamId?: string,
   userEmail?: string
-): Promise<void> {
+): Promise<string[]> {
   let team: TeamDocument;
   if (teamId) {
     // eslint-disable-next-line prefer-destructuring
@@ -136,17 +136,34 @@ export async function addBulkMembersService(
     throw new BadRequestError('You cannot invite yourself to team');
   }
 
-  const newEmails = memberEmails.filter((email) => !team.pending_invites.find((pe) => pe === email));
-  team.pending_invites.push(...newEmails);
-  await team.save();
+  let newEmails = memberEmails.filter((email) => !team.pending_invites.find((pe) => pe === email));
 
   /**
-   * Now sending email to those members
-   * that are not on hazree portal
-   */
-  const users: UsersModel[] = await UsersModel.scan('email').in(newEmails).all().exec();
-  const notRegisterUserEmails = newEmails.filter((email) => !users.find((user) => user.email === email));
-  await emailService.sendTeamJoinInvitation(team.name, notRegisterUserEmails);
+  * Now sending email to those members
+  * that are not on hazree portal
+  */
+  let users: UsersModel[] = [];
+  if (newEmails.length > 0) {
+    users = await UsersModel.scan('email').in(newEmails).all().exec();
+    const notRegisterUserEmails = newEmails.filter((email) => !users.find((user) => user.email === email));
+    await emailService.sendTeamJoinInvitation(team.name, notRegisterUserEmails);
+  }
+
+  newEmails = newEmails.filter((email) => {
+    const existingUser = users.find((user) => user.email === email);
+    if (existingUser && team.members.includes(existingUser.user_id)) {
+      return false;
+    }
+    return true;
+  });
+
+  if (newEmails.length === 0 && memberEmails.length > 0) {
+    throw new BadRequestError('Sorry no new members specified, the given are already added or pending approval');
+  }
+
+  team.pending_invites.push(...newEmails);
+  await team.save();
+  return newEmails;
 }
 
 export async function updateTeamInvitation(

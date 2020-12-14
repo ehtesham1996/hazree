@@ -60,7 +60,7 @@ export function teamUserAddSuccessMessage(teamName: string, users: Array<string>
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `>Successfully added members \`${users.join(', ')}\`\n\tInto the team \`${teamName}\``
+        text: `>Successfully added members \`${users.map((user) => `<@${user}>`)}\`\n\tInto the team \`${teamName}\``
       }
     }
   ];
@@ -72,7 +72,7 @@ export function teamUserAddFailMessage(message = ''): Array<any> {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `>Error: Cannot add members!\n\t${message}`
+        text: `>Error: Cannot add members\n>${message}`
       }
     }
   ];

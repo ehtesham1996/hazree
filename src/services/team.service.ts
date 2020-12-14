@@ -193,7 +193,7 @@ export async function getTeamMembers(teamId: string, adminId?: string): Promise<
     throw new HttpError('Sorry you are not admin of this team', 403);
   }
 
-  const memberIds = teamData.members;
+  const memberIds = [...teamData.members, ...teamData.admins];
   const members: UsersDocument[] = [];
 
   await Promise.all(memberIds.map(async (memberId) => {

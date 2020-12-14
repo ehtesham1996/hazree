@@ -37,7 +37,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent) =>
       tz: 'Asia/Karachi'
     };
 
-    const parsedDate = moment(date, 'YYYY-MM-DD').tz(requestingUser.tz);
+    const parsedDate = moment(date, 'YYYY-MM-DD', true).tz(requestingUser.tz);
     console.log(parsedDate.toISOString());
 
     if (!parsedDate.isValid()) {

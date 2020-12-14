@@ -40,8 +40,8 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent): P
 
     const dateParsed = moment().isoWeekYear(+isoWeekYear).isoWeek(+isoWeekNumber).tz(requestingUser.tz);
 
-    if (!dateParsed.isValid() || isoWeekYear === null || isoWeekYear === null) {
-      throw new BadRequestError('Please specify the year and week');
+    if (!dateParsed.isValid() || !+(isoWeekYear) || !+(isoWeekNumber) || +isoWeekNumber > 53) {
+      throw new BadRequestError('Please specify the year and week correctly');
     }
 
     const wStart = dateParsed.startOf('isoWeek').unix();

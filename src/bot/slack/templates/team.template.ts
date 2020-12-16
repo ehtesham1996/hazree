@@ -138,7 +138,7 @@ export function teamListFailMessage(message = ''): Array<any> {
   ];
 }
 
-export function teamMemberListMessage(members: UsersDocument[]): Array<any> {
+export function teamMemberListMessage(members: UsersDocument[], invitedEmails: string[]): Array<any> {
   const blocks: any = [
     {
       type: 'header',
@@ -174,6 +174,32 @@ export function teamMemberListMessage(members: UsersDocument[]): Array<any> {
       }
     );
   });
+
+  if (invitedEmails.length > 0) {
+    blocks.push({
+      type: 'divider'
+    });
+
+    blocks.push(
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: '*Invited Emails*'
+        }
+      }
+    );
+
+    invitedEmails.forEach((email, index) => {
+      blocks.push({
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `${index + 1}. *${email}*`
+        }
+      });
+    });
+  }
 
   return blocks;
 }

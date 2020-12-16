@@ -20,9 +20,9 @@ export async function teamListTeamMember(com: UserCommand, user: UsersDocument):
 
     const teamMemberData = await teamService.getTeamMembers(team.id);
 
-    const { members } = teamMemberData;
+    const { members, teamData } = teamMemberData;
 
-    return teamMemberListMessage(members);
+    return teamMemberListMessage(members, teamData.pending_invites);
   } catch (error) {
     console.log('Error TM Create: ', error.message);
     return teamCreateFailMessage();

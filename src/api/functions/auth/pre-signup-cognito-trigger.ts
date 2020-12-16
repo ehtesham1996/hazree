@@ -59,7 +59,7 @@ export const handler: PreSignUpTriggerHandler = async (event, _context, callback
       userData.save();
     } else if (event.triggerSource === 'PreSignUp_SignUp' || event.triggerSource === 'PreSignUp_AdminCreateUser') {
       console.log('Inside of PreSignUp_SignUp and PreSignUp_AdminCreateUser');
-      return callback('A social account with that email already exists.Please signin using social sign-in options', event);
+      return callback(new Error('A social account with that email already exists.Please signin using social sign-in options'), event);
     }
   } else {
     const userData = new UsersModel({
@@ -69,7 +69,8 @@ export const handler: PreSignUpTriggerHandler = async (event, _context, callback
       profile_picture: picture
     });
     userData.save();
-    if (event.triggerSource === 'PreSignUp_AdminCreateUser') {
+    if (event.triggerSource === 'PreSignUp_AdminCreateUser'
+      || event.triggerSource === 'PreSignUp_ExternalProvider') {
       event.response.autoVerifyEmail = true;
     }
   }

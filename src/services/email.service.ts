@@ -1,3 +1,4 @@
+import { APP_NAME, SOURCE_EMAIL } from '@src/core';
 import AWS from 'aws-sdk';
 import { SendEmailRequest } from 'aws-sdk/clients/ses';
 
@@ -21,10 +22,10 @@ export const sendTeamJoinInvitation = async (teamName: string, emails: string[])
       },
       Subject: {
         Charset: 'UTF-8',
-        Data: 'Hazree Team Join Invitation'
+        Data: `${APP_NAME} Team Join Invitation`
       }
     },
-    Source: 'ehtesham.hussain@softoo.co' /* required */
+    Source: SOURCE_EMAIL /* required */
   };
 
   try {

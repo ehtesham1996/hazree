@@ -84,6 +84,8 @@ functions:
     #       pool: hazree-pool-user-${self:provider.stage}
     #       trigger: PreSignUp
     #       existing: true
+  pre-authentication-cognito-trigger:
+    handler: src/api/functions/auth/pre-authentication-cognito-trigger.handler
 
   get-profile:
     handler: src/api/functions/profile/get-profile.handler

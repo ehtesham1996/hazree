@@ -39,7 +39,8 @@ export async function register(com: UserCommand, user: UsersDocument): Promise<v
       await registerUser({
         name: real_name,
         email,
-        slack_user_id: com.userId
+        slack_user_id: com.userId,
+        picture: image_original
       }, true);
       registrationMsg = '>You have successfully registered :tada: \n>Your login credentials for hazree portal are sent by email';
     }

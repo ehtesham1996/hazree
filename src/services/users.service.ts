@@ -8,6 +8,7 @@ export type UserRegistrationData = {
   password?: string;
   email: string;
   slack_user_id?: string;
+  picture?: string;
 }
 
 export type RegisterUserReturnType = Promise<AWSError | BadRequestError | string>
@@ -36,6 +37,13 @@ export const registerUser = (userData: UserRegistrationData, sendEmail: boolean)
     ]
 
   };
+
+  if (userData.picture) {
+    params.UserAttributes.push({
+      Name: 'picture',
+      Value: userData.picture
+    });
+  }
 
   if (userData.password) {
     params.TemporaryPassword = userData.password;

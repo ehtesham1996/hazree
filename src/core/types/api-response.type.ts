@@ -22,10 +22,7 @@ export class APIResponse implements APIGatewayProxyResult {
   private apiResponse: CustomResponse;
 
   success(message = 'OK', data?: any): APIGatewayProxyResult {
-    this.headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': true
-    };
+    this.setHeaders();
     this.statusCode = 200;
     this.apiResponse = {
       success: true,
@@ -37,11 +34,20 @@ export class APIResponse implements APIGatewayProxyResult {
   }
 
   error(statusCode = 500, message = 'Internal server error occurred'): APIGatewayProxyResult {
-    this.headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': true
-    };
+    this.setHeaders();
     this.statusCode = statusCode;
+    this.apiResponse = {
+      error: true,
+      success: false,
+      message
+    };
+
+    return this.build;
+  }
+
+  unAuthorized(message = 'Internal server error occurred'): APIGatewayProxyResult {
+    this.setHeaders();
+    this.statusCode = 401;
     this.apiResponse = {
       error: true,
       success: false,
@@ -55,6 +61,7 @@ export class APIResponse implements APIGatewayProxyResult {
     this.headers = headers;
     this.headers['Access-Control-Allow-Origin'] = '*';
     this.headers['Access-Control-Allow-Credentials'] = true;
+    this.headers['Access-Control-Allow-Headers'] = '*';
     return this;
   }
 
@@ -63,6 +70,7 @@ export class APIResponse implements APIGatewayProxyResult {
     return this;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   setBody(body: object): APIResponse {
     this.apiResponse.data = JSON.stringify(body);
     return this;

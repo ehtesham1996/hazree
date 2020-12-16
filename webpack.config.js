@@ -8,7 +8,9 @@ module.exports = {
   context: __dirname,
   mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
   entry: slsw.lib.entries,
-  devtool: slsw.lib.webpack.isLocal ? 'cheap-module-eval-source-map' : 'source-map',
+  devtool: slsw.lib.webpack.isLocal
+    ? 'cheap-module-eval-source-map'
+    : 'source-map',
   resolve: {
     extensions: ['.mjs', '.json', '.ts'],
     symlinks: false,
@@ -16,7 +18,8 @@ module.exports = {
     alias: {
       '@src': path.resolve(__dirname, './src'),
       '@queries': path.resolve(__dirname, './queries'),
-      '@tests': path.resolve(__dirname, './tests')
+      '@tests': path.resolve(__dirname, './tests'),
+      '@commands': path.resolve(__dirname, './src/bot/commands')
     }
   },
   output: {
@@ -48,9 +51,9 @@ module.exports = {
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin({
-      eslint: true,
-      eslintOptions: {
-        cache: true
+      eslint: {
+        enabled: true,
+        files: '**/*.ts'
       }
     })
   ]

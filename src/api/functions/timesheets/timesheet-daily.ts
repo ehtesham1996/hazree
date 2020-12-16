@@ -1,6 +1,6 @@
 import { APIGatewayProxyHandler, APIGatewayEvent } from 'aws-lambda';
 import {
-  UserModel, AttendanceModel, UserDocument, AttendanceDocument
+  UsersModel, AttendanceModel, UsersDocument, AttendanceDocument
 } from '@src/database';
 import { BadRequestError } from '@src/core/errors';
 import { APIResponse, UserBaseData } from '@src/core/types';
@@ -30,14 +30,14 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent) =>
     /**
      * For time being supposing admin user object until login credentials are finalized.
      */
-    const requestingUser = new UserModel({
+    const requestingUser = {
       id: 'adminId',
       user_id: 'Admin',
       real_name: 'Admin',
       tz: 'Asia/Karachi'
-    });
+    };
 
-    const parsedDate = moment(date, 'YYYY-MM-DD').tz(requestingUser.tz);
+    const parsedDate = moment(date, 'YYYY-MM-DD', true).tz(requestingUser.tz);
     console.log(parsedDate.toISOString());
 
     if (!parsedDate.isValid()) {
@@ -46,7 +46,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent) =>
 
     // Getting all employes from database with projection of their name
     // eslint-disable-next-line @typescript-eslint/camelcase
-    const allUsers: UserDocument[] = await UserModel.scan().all().exec();
+    const allUsers: UsersDocument[] = await UsersModel.scan().all().exec();
 
     const startDate = parsedDate.startOf('day').unix();
     const endDate = parsedDate.endOf('day').unix();
@@ -71,9 +71,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent) =>
       //   }
       // };
       const attendance: AttendanceDocument = (await AttendanceModel
-        .scan()
-        .where('team_id').eq(user.team_id)
-        .and()
+        .query()
         .where('user_id')
         .eq(user.user_id)
         .and()
@@ -88,10 +86,10 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent) =>
         let outTime = session.out_stamp;
         const comments = session.comment;
         if (!outTime) {
-          const dayEndOutTime = moment(attendance.date * 1000).tz(user.tz).endOf('day').unix();
+          const dayEndOutTime = moment(attendance.date * 1000).tz(requestingUser.tz).endOf('day').unix();
           // Checking if it's not today
-          if (moment().tz(user.tz).endOf('day').unix() !== dayEndOutTime) {
-            outTime = moment(attendance.date * 1000).tz(user.tz).endOf('day').unix();
+          if (moment().tz(requestingUser.tz).endOf('day').unix() !== dayEndOutTime) {
+            outTime = moment(attendance.date * 1000).tz(requestingUser.tz).endOf('day').unix();
           } else {
             outTime = moment().unix();
           }

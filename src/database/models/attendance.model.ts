@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import * as dynamoose from 'dynamoose';
 import { Document } from 'dynamoose/dist/Document';
 import { TABLE_PREFIX } from '../functions';

@@ -1,7 +1,7 @@
 import { SlackUser, userInfo } from '@src/bot/slack/api';
 import { channelMembers } from '@src/bot/slack/api/channels-members.api';
 import { markDownMessage, teamUserAddFailMessage, teamUserAddSuccessMessage } from '@src/bot/slack/templates';
-import { UserCommand } from '@src/core';
+import { BadRequestError, HttpError, UserCommand } from '@src/core';
 import { UsersDocument } from '@src/database/models';
 import * as teamService from '@src/services/team.service';
 
@@ -43,6 +43,9 @@ export async function teamAddAll(com: UserCommand, user: UsersDocument): Promise
     return teamUserAddFailMessage(`Cannot find team \`${teamName}\`, it does not exist or you do not have permission!`);
   } catch (error) {
     console.log('Error TM Create: ', error.message);
+    if (error instanceof HttpError || error instanceof BadRequestError) {
+      return teamUserAddFailMessage(error.message);
+    }
     return teamUserAddFailMessage();
   }
 }

@@ -1,7 +1,20 @@
 import {
-  teamInvalidParameters, teamAlreadyExists, teamCreateMessage, teamCreateFailMessage, teamUserAddFailMessage, teamUserRemoveFailMessage, teamUserRemoveSuccessMessage, teamListFailMessage, teamNoListMessage, teamMemberListMessage, teamListSuccessMessage, teamUserAddSuccessMessage
+  teamInvalidParameters,
+  teamAlreadyExists,
+  teamCreateMessage,
+  teamCreateFailMessage,
+  teamUserAddFailMessage,
+  teamUserRemoveFailMessage,
+  teamUserRemoveSuccessMessage,
+  teamListFailMessage,
+  teamNoListMessage,
+  teamListSuccessMessage,
+  teamUserAddSuccessMessage
 } from '@src/bot/slack/templates';
+<<<<<<< HEAD
 import { any } from 'superstruct';
+=======
+>>>>>>> 826861e7711e90863003561d020babaab8051b4e
 
 describe('bot/slack/templates ==> Team all specification', () => {
   it('should return team invalid parameters', () => {

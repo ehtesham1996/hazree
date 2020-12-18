@@ -35,7 +35,6 @@ export const GetTeams: APIGatewayAuthenticatedHandler = async (event) => {
     if (error instanceof HttpError) return new APIResponse().error(error.statusCode, error.message);
     return new APIResponse().error(500, 'Something went wrong');
   }
-
 };
 
 export const handler = middy(GetTeams).use(authorize());

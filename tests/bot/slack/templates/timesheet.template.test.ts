@@ -1,8 +1,7 @@
-import { punchOutMessage } from '@src/bot/slack/templates';
-import { number, string } from 'superstruct';
+import { timesheetTemplate } from '@src/bot/slack/templates';
 
-describe('bot/slack/templates ==> punch out message template testing', () => {
-  it('should return punch out message back from bot', () => {
+describe('bot/slack/templates ==> timesheet list template testing', () => {
+  it('should return punch in message back from bot', () => {
     const expected = [
       {
         type: 'section',
@@ -40,7 +39,7 @@ describe('bot/slack/templates ==> punch out message template testing', () => {
         ]
       }
     ];
-    const actual = punchOutMessage({});
+    const actual = timesheetTemplate({});
     expect(expected).toStrictEqual(actual);
   });
 });

@@ -1,8 +1,7 @@
 import {
   teamInvalidParameters, teamAlreadyExists, teamCreateMessage, teamCreateFailMessage, teamUserAddFailMessage, teamUserRemoveFailMessage, teamUserRemoveSuccessMessage, teamListFailMessage, teamNoListMessage, teamMemberListMessage, teamListSuccessMessage, teamUserAddSuccessMessage
 } from '@src/bot/slack/templates';
-import { Document } from 'mongoose';
-import { type } from 'superstruct';
+import { any } from 'superstruct';
 
 describe('bot/slack/templates ==> Team all specification', () => {
   it('should return team invalid parameters', () => {
@@ -163,4 +162,5 @@ describe('bot/slack/templates ==> Team all specification', () => {
     const actual = teamUserRemoveFailMessage('');
     expect(expected).toStrictEqual(actual);
   });
+  // eslint-disable-next-line jest/no-identical-title
 });

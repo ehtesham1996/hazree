@@ -162,5 +162,4 @@ describe('bot/slack/templates ==> Team all specification', () => {
     const actual = teamUserRemoveFailMessage('');
     expect(expected).toStrictEqual(actual);
   });
-  // eslint-disable-next-line jest/no-identical-title
 });

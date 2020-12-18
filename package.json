@@ -7,7 +7,7 @@
     "start:debug": "export SLS_DEBUG=* && node --inspect ./node_modules/.bin/serverless offline -s dev",
     "test": "./node_modules/.bin/jest --ci --verbose",
     "test:watch": "ENV=test ./node_modules/.bin/jest --ci --verbose --watch",
-    "test:coverage": "ENV=test ./node_modules/.bin/jest --ci --verbose --coverage",
+    "test:coverage": "./node_modules/.bin/jest --ci --verbose --coverage",
     "lint": "eslint --fix --ignore-path .gitignore '**/*.ts'",
     "buildtest": "tsc --noEmit"
   },

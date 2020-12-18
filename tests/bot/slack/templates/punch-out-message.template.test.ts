@@ -1,8 +1,7 @@
 import { punchOutMessage } from '@src/bot/slack/templates';
-import { string } from 'superstruct';
 
-describe('bot/slack/templates ==> punch in message template testing', () => {
-  it('should return punch in message back from bot', () => {
+describe('bot/slack/templates ==> punch out message template testing', () => {
+  it('should return punch out message back from bot', () => {
     const expected = [
       {
         type: 'section',
@@ -16,11 +15,11 @@ describe('bot/slack/templates ==> punch in message template testing', () => {
         fields: [
           {
             type: 'mrkdwn',
-            text: '*In Time*\n\n*Last Session Duration*\n\n*Total Sessions Today*\n\n'
+            text: '*In Time*\n00-00-00 00:00:00\n*Last Session Duration*\n00:00\n*Total Sessions Today*\n0\n'
           },
           {
             type: 'mrkdwn',
-            text: '*Out Time*\n\n*Total Time Worked Today*\n'
+            text: '*Out Time*\n00-00-00 00:00:00\n*Total Time Worked Today*\n00:00'
           }
         ]
       },
@@ -40,12 +39,11 @@ describe('bot/slack/templates ==> punch in message template testing', () => {
         ]
       }
     ];
-    const actual = punchOutMessage([
+    const actual = punchOutMessage(
       {
         inTime: '00-00-00 00:00:00', outTime: '00-00-00 00:00:00', lastSessionDuration: 0, sessionCount: 0, totalHours: 0
       }
-
-    ]);
+    );
     expect(expected).toStrictEqual(actual);
   });
 });

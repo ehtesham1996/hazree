@@ -199,18 +199,23 @@ export async function updateTeamInvitation(
   return 'Team invitation rejected';
 }
 
-export async function getTeamMembers(teamId: string, adminId?: string): Promise<{
+export async function getTeamMembers(teamId: string, userId?: string): Promise<{
   members: UsersDocument[];
   teamData: TeamDocument;
 }> {
   const teamData = (await TeamModel.query('id').eq(teamId).exec())[0];
   if (!teamData) throw new BadRequestError('Invalid team specified');
 
-  if (adminId && !teamData.admins.includes(adminId)) {
-    throw new HttpError('Sorry you are not admin of this team', 403);
+  if (userId && !teamData.admins.includes(userId)) {
+    if (!teamData.members.includes(userId)) {
+      throw new HttpError('Sorry you are not part of this team', 403);
+    }
   }
 
-  const memberIds = [...teamData.members, ...teamData.admins];
+  let memberIds = [...teamData.members, ...teamData.admins];
+  if (!teamData.admins.includes(userId)) {
+    memberIds = memberIds.filter((member) => member === userId);
+  }
   const members: UsersDocument[] = [];
 
   await Promise.all(memberIds.map(async (memberId) => {

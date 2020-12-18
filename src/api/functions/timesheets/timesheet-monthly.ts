@@ -28,7 +28,7 @@ const colorData = [{
   color: '#8FA7EC'
 },
 {
-  max: 18000,
+  max: 18000,   
   color: '#657FC1'
 },
 {

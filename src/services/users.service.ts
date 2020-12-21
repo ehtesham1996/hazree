@@ -1,7 +1,19 @@
-import { BadRequestError } from '@src/core';
-import { UsersDocument, UsersModel } from '@src/database';
+import {
+  BadRequestError,
+  timeSince,
+  UserLastActivityData,
+  UserLastActivityColor
+} from '@src/core';
+import {
+  AttendanceDocument,
+  AttendanceModel,
+  UsersDocument,
+  UsersModel
+} from '@src/database';
 import { AWSError, CognitoIdentityServiceProvider } from 'aws-sdk';
 import { AdminCreateUserRequest, ListUsersResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { SortOrder } from 'dynamoose/dist/General';
+import moment from 'moment-timezone';
 
 export type UserRegistrationData = {
   name: string;
@@ -88,4 +100,55 @@ export const getUsersByEmail = async (email: string): Promise<UsersDocument[]> =
     .all()
     .exec();
   return users;
+};
+
+export const getUserLastActivity = async (userId: string, tz: string): Promise<UserLastActivityData> => {
+  let lastActivity = '';
+  let activitySince = '';
+  let activityDate = '';
+  let time = '00:00';
+  let color: UserLastActivityColor = UserLastActivityColor.inColor;
+
+  /**
+   * Get latest entry
+   */
+  const attendances: AttendanceDocument[] = await AttendanceModel
+    .query('user_id')
+    .eq(userId)
+    .sort(SortOrder.descending)
+    .limit(1)
+    .exec();
+
+  if (attendances.length >= 1 && attendances[0].sessions.length > 0) {
+    const lastSession = attendances[0].sessions[attendances[0].sessions.length - 1];
+    if (lastSession.out_stamp > 0 && lastSession.in_stamp > 0) {
+      lastActivity = 'out';
+      activitySince = timeSince(lastSession.out_stamp * 1000);
+      time = moment(lastSession.out_stamp * 1000)
+        .tz(tz)
+        .format('HH:MM');
+      activityDate = moment(lastSession.out_stamp * 1000)
+        .tz(tz)
+        .format('MM-DD-YYYY');
+      color = UserLastActivityColor.outColor;
+    } else if (lastSession.in_stamp > 0 && lastSession.out_stamp === 0) {
+      lastActivity = 'in';
+      activitySince = timeSince(lastSession.in_stamp * 1000);
+      time = moment(lastSession.in_stamp * 1000)
+        .tz(tz)
+        .format('HH:MM');
+      activityDate = moment(lastSession.in_stamp * 1000)
+        .tz(tz)
+        .format('MM-DD-YYYY');
+      color = UserLastActivityColor.inColor;
+    }
+  }
+
+  return {
+    lastActivity,
+    activitySince,
+    activityDate,
+    time,
+    color
+  };
 };

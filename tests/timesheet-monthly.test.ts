@@ -22,4 +22,26 @@ describe('lambda ==> timesheet-monthly function tests', () => {
     const actual = await handler(evt as APIGatewayEvent, ctx, null);
     expect(actual).toStrictEqual(expected);
   });
+
+  it('should return bad request error for incorrect date given', async () => {
+    const expected = {
+      body: '{"error":true,"success":false,"message":"Please select correct month in format YYYY-MM ERR(BR-01)"}',
+      headers: {
+        'Access-Control-Allow-Credentials': true,
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Origin': '*'
+      },
+      isBase64Encoded: undefined,
+      multiValueHeaders: undefined,
+      statusCode: 400
+    };
+
+    const ctx = context.default();
+    const evt = {} as APIGatewayEvent;
+    evt.pathParameters = {
+      date: '2020-21'
+    };
+    const actual = await handler(evt, ctx, null);
+    expect(actual).toStrictEqual(expected);
+  });
 });

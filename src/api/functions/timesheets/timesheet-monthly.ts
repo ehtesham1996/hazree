@@ -28,7 +28,7 @@ const colorData = [{
   color: '#8FA7EC'
 },
 {
-  max: 18000,   
+  max: 18000,
   color: '#657FC1'
 },
 {
@@ -80,7 +80,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent): P
       //     $lte: mEnd
       //   }
       // };
-      const attendances: AttendanceDocument[] = await AttendanceModel
+      const attendances: AttendanceDocument[] = (await AttendanceModel
         .query()
         .where('user_id')
         .eq(user.user_id)
@@ -88,7 +88,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayEvent): P
         .where('date')
         .between(mStart, mEnd)
         .all()
-        .exec();
+        .exec()) ?? [];
 
       let total = 0;
       const dailyData: Array<DailyData> = [];

@@ -60,7 +60,7 @@ describe('utils ===> timeSince function test', () => {
   it('should return 1 minutes ago for input date 1 minute ago', () => {
     const date = new Date();
     const input = date.getTime() - 60000;
-    const expected = '1 minutes ago';
+    const expected = '1 minute ago';
     const actual = timeSince(input);
     expect(actual).toBe(expected);
   });

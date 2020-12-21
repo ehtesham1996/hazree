@@ -6,26 +6,13 @@ import {
   APIResponse,
   BadRequestError,
   extractUserBaseData,
-  timeSince,
   UserBaseData
 } from '@src/core';
 import moment from 'moment-timezone';
-import {
-  AttendanceDocument, AttendanceModel
-} from '@src/database';
-import { SortOrder } from 'dynamoose/dist/General';
 import middy from 'middy';
 import * as teamService from '@src/services/team.service';
+import { getUserLastActivity } from '@src/services';
 import authorize from '../auth/authorize.middleware';
-
-/**
- * Color variable used for teams page
- * to be used dynamically later with settings
- */
-const Color = {
-  inColor: '#00366F',
-  outColor: '#ccc'
-};
 
 type teamAllMembersType = UserBaseData & {
   lastActivity: string;
@@ -65,45 +52,15 @@ const GetTeamMembers: APIGatewayAuthenticatedHandler = async (event): Promise<AP
           user,
           teamData.admins.includes(user.user_id) ? 'Team Admin' : 'Member'
         );
-        let lastActivity = '';
-        let activitySince = '';
-        let activityDate = '';
-        let time = '00:00';
-        let color = '';
 
-        /**
-         * Get latest entry
-         */
-        const attendances: AttendanceDocument[] = await AttendanceModel
-          .query('user_id')
-          .eq(user.user_id)
-          .sort(SortOrder.descending)
-          .exec();
+        const {
+          lastActivity,
+          activityDate,
+          activitySince,
+          time,
+          color
+        } = await getUserLastActivity(user.user_id, tz);
 
-        if (attendances.length >= 1 && attendances[0].sessions.length > 0) {
-          const lastSession = attendances[0].sessions[attendances[0].sessions.length - 1];
-          if (lastSession.out_stamp > 0 && lastSession.in_stamp > 0) {
-            lastActivity = 'out';
-            activitySince = timeSince(lastSession.out_stamp * 1000);
-            time = moment(lastSession.out_stamp * 1000)
-              .tz(tz)
-              .format('HH:MM');
-            activityDate = moment(lastSession.out_stamp * 1000)
-              .tz(tz)
-              .format('MM-DD-YYYY');
-            color = Color.outColor;
-          } else if (lastSession.in_stamp > 0 && lastSession.out_stamp === 0) {
-            lastActivity = 'in';
-            activitySince = timeSince(lastSession.in_stamp * 1000);
-            time = moment(lastSession.in_stamp * 1000)
-              .tz(tz)
-              .format('HH:MM');
-            activityDate = moment(lastSession.in_stamp * 1000)
-              .tz(tz)
-              .format('MM-DD-YYYY');
-            color = Color.inColor;
-          }
-        }
         return {
           ...userBaseData,
           lastActivity,

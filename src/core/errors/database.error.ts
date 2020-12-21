@@ -7,4 +7,3 @@ export class DatabaseConnectionError extends Error {
     super('Oops! seems like we\'re having difficulties.Please try again later. ERR(DB-01)');
   }
 }
-  

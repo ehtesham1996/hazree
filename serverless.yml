@@ -14,6 +14,10 @@ custom:
   prune:
     automatic: true
     number: 3
+  cors:
+    allowedOrigins : "*"
+    allowedHeaders : 
+      - "*"
 
 plugins:
   - serverless-offline
@@ -55,6 +59,7 @@ functions:
           cors: true
   timesheet-monthly:
     handler: src/api/functions/timesheets/timesheet-monthly.handler
+    memorySize: 320
     events:
       - http:
           method: get
@@ -93,7 +98,9 @@ functions:
      - http:
           method: get
           path: profile
-          cors: true
+          cors: 
+            origin: ${self:custom.cors.allowedOrigins}
+            headers: ${self:custom.cors.allowedHeaders}
           authorizer:
             arn: ${self:provider.environment.COGNITO_USER_POOL_ARN}
   team-get:
@@ -139,9 +146,8 @@ functions:
           method: get
           path: team/members
           cors:
-            origin: "*"
-            headers: 
-              - "*"
+            origin: ${self:custom.cors.allowedOrigins}
+            headers: ${self:custom.cors.allowedHeaders}
           authorizer:
             arn: ${self:provider.environment.COGNITO_USER_POOL_ARN}
   team-member-post:
@@ -151,9 +157,8 @@ functions:
           method: post
           path: team/members
           cors:
-            origin: "*"
-            headers: 
-              - "*"
+            origin: ${self:custom.cors.allowedOrigins}
+            headers: ${self:custom.cors.allowedHeaders}
           authorizer:
             arn: ${self:provider.environment.COGNITO_USER_POOL_ARN}
   team-member-delete:
@@ -163,9 +168,8 @@ functions:
           method: delete
           path: team/members
           cors:
-            origin: "*"
-            headers: 
-              - "*"
+            origin: ${self:custom.cors.allowedOrigins}
+            headers: ${self:custom.cors.allowedHeaders}
           authorizer:
             arn: ${self:provider.environment.COGNITO_USER_POOL_ARN}
 

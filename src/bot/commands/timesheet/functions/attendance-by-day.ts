@@ -2,7 +2,7 @@ import moment from 'moment-timezone';
 import { UserCommand } from '@src/core';
 import { UsersDocument, AttendanceModel, AttendanceDocument } from '@src/database/models';
 import { userInfo } from '@src/bot/slack/api';
-import { monthlyTimesheetTemplate } from '../../../slack/templates';
+import { markDownMessage, monthlyTimesheetTemplate } from '../../../slack/templates';
 
 // get attendance by day, @timesheet 2020 02 01
 export const getAttendanceByDay = async (com: UserCommand, user: UsersDocument): Promise<Array<any> | null> => {
@@ -19,11 +19,19 @@ export const getAttendanceByDay = async (com: UserCommand, user: UsersDocument):
   const year = Number(parameters[0]) || Number(timestamp.format('YYYY'));
   const month = Number(parameters[1]) - 1 || timestamp.month();
   const day = Number(parameters[2]) || timestamp.date();
+  console.log(year, month, day);
 
-  const queryDate = new Date(year, month, day, 0, 0, 0, 0);
+  const queryDate = moment.tz(`${year}-${month + 1}-${day}`, 'YYYY-MM-DD', true, tz);
+  console.log(queryDate.format());
 
-  const startTimestamp = moment(queryDate).tz(tz);
-  const endTimestamp = moment().tz(tz);
+  if (!queryDate.isValid()) {
+    return markDownMessage('>Sorry you have specified incorrect date');
+  }
+
+  const startTimestamp = queryDate.clone();
+  const endTimestamp = queryDate.endOf('day');
+
+  console.log('startTimeStamp ', startTimestamp.format(), 'endTimeStamp', endTimestamp.format());
 
   const attendance: AttendanceDocument = (await AttendanceModel
     .query()
@@ -49,7 +57,7 @@ export const getAttendanceByDay = async (com: UserCommand, user: UsersDocument):
     if (attendance.date === moment().tz(tz).startOf('day').unix()) {
       lastSession.out_stamp = endTimestamp.unix();
     } else {
-      lastSession.out_stamp = moment(lastSession.in_stamp * 1000).endOf('day').unix();
+      lastSession.out_stamp = moment(lastSession.in_stamp * 1000).tz(tz).endOf('day').unix();
     }
   }
   const totalHours = attendance.sessions.reduce((acc, curr) => {

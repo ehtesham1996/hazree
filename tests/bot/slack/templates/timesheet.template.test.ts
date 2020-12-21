@@ -1,11 +1,7 @@
-import { punchOutMessage } from '@src/bot/slack/templates';
-<<<<<<< HEAD
-import { number, string } from 'superstruct';
-=======
->>>>>>> 826861e7711e90863003561d020babaab8051b4e
+import { timesheetTemplate } from '@src/bot/slack/templates';
 
-describe('bot/slack/templates ==> punch out message template testing', () => {
-  it('should return punch out message back from bot', () => {
+describe('bot/slack/templates ==> timesheet list template testing', () => {
+  it('should return punch in message back from bot', () => {
     const expected = [
       {
         type: 'section',
@@ -43,15 +39,7 @@ describe('bot/slack/templates ==> punch out message template testing', () => {
         ]
       }
     ];
-<<<<<<< HEAD
-    const actual = punchOutMessage({});
-=======
-    const actual = punchOutMessage(
-      {
-        inTime: '00-00-00 00:00:00', outTime: '00-00-00 00:00:00', lastSessionDuration: 0, sessionCount: 0, totalHours: 0
-      }
-    );
->>>>>>> 826861e7711e90863003561d020babaab8051b4e
+    const actual = timesheetTemplate({});
     expect(expected).toStrictEqual(actual);
   });
 });

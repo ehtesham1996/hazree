@@ -11,9 +11,13 @@ import { BadRequestError, HttpError } from '@src/core';
 import * as emailService from './email.service';
 
 export async function addNewTeam(teamName: string, userId: string): Promise<TeamDocument> {
+  const fixedTeamName = teamName.trim();
+
+  if (!fixedTeamName) throw new BadRequestError('Please specify valid team name');
+
   const newItem = {
     id: uuidv4(),
-    name: teamName,
+    name: fixedTeamName,
     created_by: userId,
     created_date: moment().unix(),
     admins: [userId],
@@ -22,13 +26,7 @@ export async function addNewTeam(teamName: string, userId: string): Promise<Team
   };
   const tm = new TeamModel(newItem);
 
-  try {
-    await tm.save();
-    return tm;
-  } catch (error) {
-    console.error(error.message);
-  }
-
+  await tm.save();
   return tm;
 }
 

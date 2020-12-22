@@ -2,7 +2,8 @@ import {
   APIGatewayAuthenticatedHandler,
   APIResponse,
   BadRequestError,
-  HttpAlreadyExistsError
+  HttpAlreadyExistsError,
+  HttpError
 } from '@src/core';
 import middy from 'middy';
 import 'source-map-support/register';
@@ -36,7 +37,10 @@ const PostTeam: APIGatewayAuthenticatedHandler = async (event) => {
         teamName: teamData.name
       });
   } catch (error) {
-    return new APIResponse().error(error.statusCode, error.message);
+    if (error instanceof HttpError) {
+      return new APIResponse().error(error.statusCode, error.message);
+    }
+    return new APIResponse().error();
   }
 };
 

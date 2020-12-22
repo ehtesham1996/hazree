@@ -1,5 +1,10 @@
-import { teamAlreadyExists, teamCreateFailMessage, teamCreateMessage } from '@src/bot/slack/templates';
-import { UserCommand } from '@src/core';
+import {
+  markDownMessage,
+  teamAlreadyExists,
+  teamCreateFailMessage,
+  teamCreateMessage
+} from '@src/bot/slack/templates';
+import { HttpError, UserCommand } from '@src/core';
 import { UsersDocument } from '@src/database/models';
 import { checkTeamService, addNewTeam } from '@src/services';
 
@@ -18,6 +23,9 @@ export async function teamCreate(com: UserCommand, user: UsersDocument): Promise
     return teamAlreadyExists(teamName);
   } catch (error) {
     console.log('Error TM Create: ', error.message);
+    if (error instanceof HttpError) {
+      return markDownMessage(error.message);
+    }
     return teamCreateFailMessage();
   }
 }

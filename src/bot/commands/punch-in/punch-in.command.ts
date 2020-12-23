@@ -16,7 +16,7 @@ export async function punchIn(com: UserCommand, user: UsersDocument): Promise<vo
   const date = timestamp.clone().startOf('day').unix();
 
   const teamId = ''; // For time being sending teamId as empty since
-  const attendance: AttendanceDocument = (await AttendanceModel
+  let attendance: AttendanceDocument = (await AttendanceModel
     .query()
     .where('user_id')
     .eq(user.user_id)
@@ -24,22 +24,24 @@ export async function punchIn(com: UserCommand, user: UsersDocument): Promise<vo
     .where('date')
     .eq(date)
     .all()
-    .exec())[0]
-    ?? new AttendanceModel({
-      team_id: teamId, user_id: user.user_id, date, sessions: []
-    });
-  const pendingSession = attendance.sessions.find((s) => s.out_stamp === 0);
-  if (!pendingSession) {
-    attendance.sessions.push({
-      in_stamp: timestamp.unix(),
-      out_stamp: 0,
-      comment: '',
-      ses_type: 'work'
-    });
-    await attendance.save();
-    await chatPostMessage(com.userId, punchInMessage());
+    .exec())[0];
+
+  if (attendance) {
+    const pendingSession = attendance.sessions.find((s) => s.out_stamp === 0);
+    await chatPostMessage(com.userId,
+      markDownMessage(`>You are already punched \`in\` for today.${pendingSession ? '' : 'Use `back` command to continue further'}:robot_face:`));
     return;
   }
-  await chatPostMessage(com.userId,
-    markDownMessage('>You are already punched `in` :robot_face:'));
+
+  attendance = new AttendanceModel({
+    team_id: teamId, user_id: user.user_id, date, sessions: []
+  });
+  attendance.sessions.push({
+    in_stamp: timestamp.unix(),
+    out_stamp: 0,
+    comment: '',
+    ses_type: 'work'
+  });
+  await attendance.save();
+  await chatPostMessage(com.userId, punchInMessage());
 }

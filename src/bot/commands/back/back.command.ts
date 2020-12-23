@@ -11,7 +11,7 @@ export async function back(com: UserCommand, user: UsersDocument): Promise<void>
   const { tz } = slackResponse.data.user;
   /** (End) getting time zone for user */
 
-  const teamId = ''; // For time being sending team id null
+  // const teamId = ''; // For time being sending team id null
   const timestamp = moment().tz(tz);
   const date = timestamp.clone().startOf('day').unix();
   const attendance: AttendanceDocument = (await AttendanceModel
@@ -22,10 +22,12 @@ export async function back(com: UserCommand, user: UsersDocument): Promise<void>
     .where('date')
     .eq(date)
     .all()
-    .exec())[0]
-    ?? new AttendanceModel({
-      team_id: teamId, user_id: user.user_id, date, sessions: []
-    });
+    .exec())[0];
+
+  if (!attendance) {
+    await chatPostMarkdown(com.userId, '>You are not punched `in` for today :robot_face:');
+    return;
+  }
 
   const pendingSession = attendance.sessions.find((s) => s.out_stamp === 0);
   if (!pendingSession) {
@@ -39,5 +41,5 @@ export async function back(com: UserCommand, user: UsersDocument): Promise<void>
     await chatPostMarkdown(com.userId, '>Welcome back :tada:');
     return;
   }
-  await chatPostMarkdown(com.userId, '>You are already punched `in` :robot_face:');
+  await chatPostMarkdown(com.userId, '>You haven\'t done `brb` for current session :robot_face:');
 }

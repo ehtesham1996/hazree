@@ -3,6 +3,7 @@ import { AclList } from './router/types';
 import {
   back, brb, punchIn, punchOut, register, timesheet, team
 } from './commands';
+import { joke } from './commands/joke/joke.command';
 
 const { ADMIN, USER, ANY } = USER_ROLES;
 
@@ -33,6 +34,10 @@ const Acl: AclList = Object.freeze({
   },
   team: {
     exec: team,
+    allowed: [ADMIN, USER]
+  },
+  joke: {
+    exec: joke,
     allowed: [ADMIN, USER]
   }
 });

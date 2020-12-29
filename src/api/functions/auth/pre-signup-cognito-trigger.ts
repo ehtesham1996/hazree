@@ -65,7 +65,7 @@ export const handler: PreSignUpTriggerHandler = async (event, _context, callback
     const userData = new UsersModel({
       user_id: userId,
       name,
-      email: event.request.userAttributes.email,
+      email: event.request.userAttributes.email || '',
       profile_picture: picture
     });
     userData.save();

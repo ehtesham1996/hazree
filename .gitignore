@@ -10,7 +10,7 @@ jspm_packages
 .eslintcache
 
 #Exlcuding env files
-.env
+.env*
 
 #Exluding jest coverage file
 /coverage/

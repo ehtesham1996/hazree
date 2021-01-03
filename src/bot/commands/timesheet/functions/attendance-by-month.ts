@@ -2,7 +2,7 @@ import moment from 'moment-timezone';
 import { UserCommand } from '@src/core';
 import { UsersDocument, AttendanceModel, AttendanceDocument } from '@src/database/models';
 import { userInfo } from '@src/bot/slack/api';
-import { monthlyTimesheetTemplate } from '../../../slack/templates';
+import { markDownMessage, monthlyTimesheetTemplate } from '../../../slack/templates';
 
 // get the attendance of whole month, @timesheet 2020 06
 export const getAttendanceByMonth = async (com: UserCommand, user: UsersDocument): Promise<Array<any> | null> => {
@@ -14,12 +14,21 @@ export const getAttendanceByMonth = async (com: UserCommand, user: UsersDocument
   /** (End) getting time zone for user */
 
   const { parameters } = com;
-  const year = Number(parameters[0]);
+  const year = Number(parameters[0]) || Number(moment().format('YYYY'));
   const month = parameters.length === 2 ? Number(parameters[1]) - 1 : moment().month();
-  const queryDate = new Date(year, month, 1, 0, 0, 0, 0);
 
-  const startTimestamp = moment(queryDate).tz(tz);
-  const endTimestamp = moment().tz(tz);
+  const stringYear = `${year}`;
+  const stringMonth = (`0${month + 1}`).slice(-2);
+  console.log(stringYear, stringMonth);
+
+  const queryDate = moment.tz(`${stringYear}-${stringMonth}-01`, 'YYYY-MM-DD', true, tz);
+  console.log(queryDate.format());
+
+  if (!queryDate.isValid()) {
+    return markDownMessage('>Sorry you have specified incorrect date');
+  }
+  const startTimestamp = queryDate.clone().startOf('month');
+  const endTimestamp = queryDate.endOf('month');
 
   const allAttendanceData: AttendanceDocument[] = await AttendanceModel
     .query()
@@ -46,9 +55,9 @@ export const getAttendanceByMonth = async (com: UserCommand, user: UsersDocument
     // if user fogot to put out command in last session of day, if same day then current time is out_stamp otherwise 11:59:00 is out_stamp
     if (lastSession && lastSession.out_stamp === 0) {
       if (attendance.date === moment().tz(tz).startOf('day').unix()) {
-        lastSession.out_stamp = endTimestamp.unix();
+        lastSession.out_stamp = moment().unix();
       } else {
-        lastSession.out_stamp = moment(lastSession.in_stamp * 1000).endOf('day').unix();
+        lastSession.out_stamp = moment(lastSession.in_stamp * 1000).tz(tz).endOf('day').unix();
       }
     }
 

@@ -19,9 +19,13 @@ export const getAttendanceByDay = async (com: UserCommand, user: UsersDocument):
   const year = Number(parameters[0]) || Number(timestamp.format('YYYY'));
   const month = Number(parameters[1]) - 1 || timestamp.month();
   const day = Number(parameters[2]) || timestamp.date();
-  console.log(year, month, day);
 
-  const queryDate = moment.tz(`${year}-${month + 1}-${day}`, 'YYYY-MM-DD', true, tz);
+  const stringYear = `${year}`;
+  const stringMonth = (`0${month + 1}`).slice(-2);
+  const stringDay = (`0${day}`).slice(-2);
+  console.log(stringYear, stringMonth, stringDay);
+
+  const queryDate = moment.tz(`${stringYear}-${stringMonth}-${stringDay}`, 'YYYY-MM-DD', true, tz);
   console.log(queryDate.format());
 
   if (!queryDate.isValid()) {
@@ -55,7 +59,7 @@ export const getAttendanceByDay = async (com: UserCommand, user: UsersDocument):
   // if user fogot to put out command in last session of day, if same day then current time is out_stamp otherwise 11:59:00 is out_stamp
   if (lastSession && lastSession.out_stamp === 0) {
     if (attendance.date === moment().tz(tz).startOf('day').unix()) {
-      lastSession.out_stamp = endTimestamp.unix();
+      lastSession.out_stamp = moment().unix();
     } else {
       lastSession.out_stamp = moment(lastSession.in_stamp * 1000).tz(tz).endOf('day').unix();
     }

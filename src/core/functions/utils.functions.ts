@@ -43,11 +43,11 @@ export function timeSince(date): string {
   let interval = seconds / 31536000;
 
   if (interval >= 1) {
-    return `${Math.floor(interval)} year${interval === 1 ? '' : 's'} ago`;
+    return `${Math.floor(interval)} year${Math.floor(interval) === 1 ? '' : 's'} ago`;
   }
   interval = seconds / 2592000;
   if (interval >= 1) {
-    return `${Math.floor(interval)} month${interval === 1 ? '' : 's'} ago`;
+    return `${Math.floor(interval)} month${Math.floor(interval) === 1 ? '' : 's'} ago`;
   }
   interval = seconds / 86400;
   if (interval >= 2) {
@@ -57,11 +57,11 @@ export function timeSince(date): string {
   }
   interval = seconds / 3600;
   if (interval >= 1) {
-    return `${Math.floor(interval)} hour${interval === 1 ? '' : 's'} ago`;
+    return `${Math.floor(interval)} hour${Math.floor(interval) === 1 ? '' : 's'} ago`;
   }
   interval = seconds / 60;
   if (interval >= 1) {
-    return `${Math.floor(interval)} minute${interval === 1 ? '' : 's'} ago`;
+    return `${Math.floor(interval)} minute${Math.floor(interval) === 1 ? '' : 's'} ago`;
   }
-  return `${Math.floor(seconds)} second${interval === 1 ? '' : 's'} ago`;
+  return `${Math.floor(seconds)} second${Math.floor(interval) === 1 ? '' : 's'} ago`;
 }

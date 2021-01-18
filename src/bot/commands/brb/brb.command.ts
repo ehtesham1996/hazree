@@ -2,7 +2,7 @@ import moment from 'moment-timezone';
 import { UserCommand } from '@src/core';
 import { UsersDocument, AttendanceModel, AttendanceDocument } from '@src/database/models';
 import {
-  chatPostMarkdown, chatPostMessage, reminderInfo, userInfo
+  chatPostMarkdown, chatPostMessage, reminderAdd, userInfo
 } from '../../slack/api';
 import {
   brbInvalidReminder
@@ -49,19 +49,17 @@ export async function brb(com: UserCommand, user: UsersDocument): Promise<void> 
    */
   const remindTime = com.parameters.join(' ').toString();
   if (remindTime) {
-    const reminderResponse = await reminderInfo(
+    const reminderResponse = await reminderAdd(
       "Reminder : You're break period has ended :robot_face:",
       remindTime,
       com.userId
     );
-    console.log(reminderResponse.data);
 
     if (!reminderResponse.data.ok) {
       if (reminderResponse.data.error && reminderResponse.data.error === 'cannot_parse') {
         await chatPostMessage(com.channelId, brbInvalidReminder());
       } else {
         await chatPostMarkdown(com.userId, '>Oops some thing is wrong :robot_face:');
-        console.log(com.userId);
       }
       return;
     }

@@ -8,9 +8,7 @@
 import { AxiosResponse } from 'axios';
 import { axiosAccessInstance } from '../functions';
 
-require('dotenv').config();
-
-export async function reminderInfo(
+export async function reminderAdd(
   text: string,
   time: any,
   userId: string

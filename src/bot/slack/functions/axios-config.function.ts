@@ -10,3 +10,10 @@ export const axiosInstance = axios.create({
     Authorization: `Bearer ${process.env.SLACK_AUTH_TOKEN}`
   }
 });
+export const axiosAccessInstance = axios.create({
+  baseURL: 'https://slack.com/api',
+  timeout: 5000,
+  headers: {
+    Authorization: `Bearer ${process.env.SLACK_ACCESS_TOKEN}`
+  }
+});

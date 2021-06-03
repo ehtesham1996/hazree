@@ -5,3 +5,4 @@ export * from './timesheet.template';
 export * from './monthly-timesheet.template';
 export * from './team.template';
 export * from './brb-invalid-reminder.template';
+export * from './help.template';

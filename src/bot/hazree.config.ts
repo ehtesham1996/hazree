@@ -1,7 +1,7 @@
 import { USER_ROLES } from '@src/database/models';
 import { AclList } from './router/types';
 import {
-  back, brb, punchIn, punchOut, register, timesheet, team
+  back, brb, punchIn, punchOut, register, timesheet, team, help
 } from './commands';
 import { joke } from './commands/joke/joke.command';
 
@@ -38,6 +38,10 @@ const Acl: AclList = Object.freeze({
   },
   joke: {
     exec: joke,
+    allowed: [ADMIN, USER]
+  },
+  help: {
+    exec: help,
     allowed: [ADMIN, USER]
   }
 });

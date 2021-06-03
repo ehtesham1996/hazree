@@ -27,7 +27,7 @@ export function extractUserBaseData(user: UsersDocument, role = USER_ROLES.USER)
   return {
     name,
     userId: user.user_id,
-    imageUrl: user.profile_picture || 'https://randomuser.me/api/portraits/men/97.jpg',
+    imageUrl: user.profile_picture || 'https://i2.wp.com/a.slack-edge.com/df10d/img/avatars/ava_0021-192.png?ssl=1',
     initials,
     role
   };

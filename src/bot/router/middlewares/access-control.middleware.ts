@@ -25,7 +25,7 @@ export function accessControl(aclist: AclList) {
 
       console.log(user);
 
-      if (!user && command.command !== 'register') {
+      if (!user && command.command !== 'register' && command.command !== 'help') {
         await chatPostMarkdown(
           command.userId,
           '>You have to register with Hazree first.\n> Please use command `@hazree register` to register with us'

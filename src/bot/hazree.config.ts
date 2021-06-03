@@ -38,11 +38,11 @@ const Acl: AclList = Object.freeze({
   },
   joke: {
     exec: joke,
-    allowed: [ADMIN, USER]
+    allowed: [ADMIN, USER, ANY]
   },
   help: {
     exec: help,
-    allowed: [ADMIN, USER]
+    allowed: [ADMIN, USER, ANY]
   }
 });
 

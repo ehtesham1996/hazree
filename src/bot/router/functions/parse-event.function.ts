@@ -32,8 +32,13 @@ export function parseEvent({ body }: { body: any }): UserCommand {
   console.log('Body text is', body.event.text);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line no-control-regex
-  const [botuuid, command, ...parameters] = body.event.text.replace(/[^\x00-\x7F]/g, ' ').split(' ');
+  const [botuuid, command, ...parameters] = body
+    .event
+    .text
+    // eslint-disable-next-line no-control-regex
+    .replace(/[^\x00-\x7F]/g, ' ')
+    .replace(/\s+/g, ' ') // this is done to remove extra space bug
+    .split(' ');
   return ({
     teamId: body.team_id,
     userId: body.event.user,

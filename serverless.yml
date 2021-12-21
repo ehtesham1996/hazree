@@ -61,6 +61,7 @@ functions:
   timesheet-monthly:
     handler: src/api/functions/timesheets/timesheet-monthly.handler
     memorySize: 320
+    timeout: 15
     events:
       - http:
           method: get
